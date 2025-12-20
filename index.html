@@ -611,11 +611,12 @@
   </main>
 
   <!-- Booking Modal (Light Mode Styled) -->
-  <dialog id="booking-modal" class="fixed inset-0 z-50 w-full h-full p-0 m-0 bg-transparent hidden">
+  <div id="booking-modal" class="fixed inset-0 z-[100] w-full h-full p-0 m-0 bg-transparent hidden" role="dialog"
+    aria-modal="true">
     <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" id="modal-backdrop"></div>
 
     <div
-      class="absolute inset-x-0 bottom-0 md:top-1/2 md:left-1/2 md:bottom-auto md:-translate-x-1/2 md:-translate-y-1/2 bg-white md:w-[600px] shadow-2xl flex flex-col transition-transform duration-300 transform translate-y-full md:translate-y-0 h-[85vh] md:h-auto rounded-t-3xl md:rounded-3xl overflow-hidden"
+      class="absolute inset-x-0 bottom-0 md:top-1/2 md:left-1/2 md:bottom-auto md:-translate-x-1/2 md:-translate-y-1/2 bg-white md:w-[600px] shadow-2xl flex flex-col transition-transform duration-300 transform translate-y-full h-[85vh] md:h-auto md:max-h-[85vh] rounded-t-3xl md:rounded-3xl overflow-hidden"
       id="modal-panel">
 
       <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-20">
@@ -726,11 +727,11 @@
         </form>
       </div>
     </div>
-  </dialog>
+  </div>
 
   <script>
-    feather.replace();
-    AOS.init({ once: true, offset: 30, duration: 800 });
+    try { feather.replace(); } catch (e) { console.error('Feather init failed', e); }
+    try { AOS.init({ once: true, offset: 30, duration: 800 }); } catch (e) { console.error('AOS init failed', e); }
 
     const API_BASE = "https://booking-proxy.donguk9805.workers.dev";
     const WEEKDAY_SLOTS = ["13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
@@ -755,18 +756,31 @@
       setTimeout(() => modal.classList.add('hidden'), 300);
     }
 
-    document.querySelectorAll('.open-booking').forEach(btn => btn.addEventListener('click', (e) => {
-      e.preventDefault(); openBooking();
-    }));
+    // Use event delegation for reliability across all buttons (even dynamic ones)
+    document.addEventListener('click', (e) => {
+      // Traverse up to find the button if icon is clicked
+      const btn = e.target.closest('.open-booking');
+      if (btn) {
+        e.preventDefault();
+        openBooking();
+      }
+    });
     document.getElementById('booking-close').addEventListener('click', closeBooking);
     document.getElementById('modal-backdrop').addEventListener('click', closeBooking);
 
     async function loadReserved(from, to) {
       try {
         const res = await fetch(`${API_BASE}?mode=reserved&teacher=${encodeURIComponent(state.teacher)}&from=${from}&to=${to}`);
-        const data = await res.json();
-        if (data.ok) reservedCache = data.reserved || {};
-      } catch (e) { console.error(e); }
+        if (!res.ok) {
+          console.warn('Backend access blocked (likely CORS on local file). working in offline mode.');
+          return;
+        }
+        const text = await res.text();
+        try {
+          const data = JSON.parse(text);
+          if (data.ok) reservedCache = data.reserved || {};
+        } catch (e) { console.warn('Invalid JSON from server', text); }
+      } catch (e) { console.error('Network/Fetch error:', e); }
     }
 
     async function renderCalendar() {
