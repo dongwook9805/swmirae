@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SW 미래영재 컴퓨터학원</title>
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.1/dist/feather.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+    :root {
+      --sab: env(safe-area-inset-bottom, 0px);
+    }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(180deg, #f8f4ff 0%, #fffbe6 85%);
+      min-height: 100vh;
+      color: #1f2933;
+      padding-bottom: calc(72px + var(--sab));
+    }
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 0;
+      }
+    }
+    .glow-ring::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.45), rgba(251,191,36,0.45));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+    .k-pressable:active {
+      transform: translateY(1px);
+    }
+    #booking-modal .with-safe {
+      padding-bottom: max(16px, var(--sab));
+    }
+    #booking-modal input,
+    #booking-modal select,
+    #booking-modal textarea {
+      font-size: 16px;
+    }
+    #calendar-grid button,
+    #slot-container button {
+      min-height: 44px;
+    }
+    .hero-grid {
+      background: linear-gradient(135deg, rgba(139,92,246,0.6), rgba(251,191,36,0.6));
+    }
+    .glass-panel {
+      background: linear-gradient(120deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+      backdrop-filter: blur(14px);
+    }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 64px;
+      height: 2px;
+      margin-top: 16px;
+      background: linear-gradient(to right, rgba(139,92,246,0.85), rgba(250,204,21,0.85));
+    }
+    .floating-badge {
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    #mobile-action-bar {
+      backdrop-filter: blur(16px);
+      padding-bottom: max(12px, var(--sab));
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    body.booking-open #mobile-action-bar,
+    body.mobile-nav-open #mobile-action-bar {
+      transform: translateY(110%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    details {
+      border-radius: 0;
+    }
+    .vibe-panel {
+      border-radius: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      background: linear-gradient(120deg, rgba(255,255,255,0.95), rgba(250,245,255,0.88));
+      box-shadow: 0 18px 38px rgba(139, 92, 246, 0.08);
+      padding: 0 1.25rem 1.5rem;
+      overflow: hidden;
+    }
+    .vibe-panel summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.5rem 0;
+    }
+    .vibe-panel summary::-webkit-details-marker { display: none; }
+    .vibe-panel-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #312e81;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .summary-icon {
+      transition: transform 0.2s ease;
+      color: #8b5cf6;
+    }
+    .vibe-panel[open] .summary-icon {
+      transform: rotate(180deg);
+    }
+    .vibe-panel-content {
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
+      padding-top: 1.25rem;
+    }
+    .time-slot-grid {
+      display: grid;
+      gap: 0.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      align-items: stretch;
+    }
+    @media (min-width: 640px) {
+      .time-slot-grid {
+        gap: 0.65rem;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+    }
+    @media (min-width: 1024px) {
+      .time-slot-grid {
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased">
+  <div class="relative overflow-hidden">
+    <div class="pointer-events-none absolute -top-56 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-violet-200/45 blur-3xl"></div>
+    <div class="pointer-events-none absolute top-32 -left-48 h-[420px] w-[420px] rounded-full bg-amber-200/50 blur-3xl"></div>
+    <div class="pointer-events-none absolute bottom-0 right-0 h-[480px] w-[480px] translate-x-1/4 translate-y-1/4 rounded-full bg-fuchsia-200/40 blur-3xl"></div>
+
+    <!-- Navigation -->
+    <header class="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <a href="#" class="flex items-center gap-3 text-lg font-semibold tracking-tight text-slate-900">
+          <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100 shadow-md shadow-violet-200/60">
+            <i data-feather="cpu" class="h-5 w-5 text-violet-500"></i>
+          </span>
+          <span class="flex flex-col">
+            <span>SW 미래영재</span>
+            <span class="text-xs font-normal text-slate-500">컴퓨터학원</span>
+          </span>
+        </a>
+        <nav class="hidden items-center gap-8 md:flex">
+          <a href="#hero" class="text-sm font-medium text-slate-600 transition hover:text-violet-500">홈</a>
+          <a href="#programs" class="text-sm font-medium text-slate-600 transition hover:text-violet-500">프로그램</a>
+          <a href="#journey" class="text-sm font-medium text-slate-600 transition hover:text-violet-500">로드맵</a>
+          <a href="#teachers" class="text-sm font-medium text-slate-600 transition hover:text-violet-500">강사진</a>
+          <a href="#reviews" class="text-sm font-medium text-slate-600 transition hover:text-violet-500">후기</a>
+        </nav>
+        <div class="hidden items-center gap-3 md:flex">
+          <button class="open-chat inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-4 py-2 text-sm font-medium text-violet-600 transition hover:border-violet-200 hover:bg-violet-50">
+            <i data-feather="message-circle" class="h-4 w-4"></i>
+            문의하기
+          </button>
+          <button class="open-booking inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 via-amber-500 to-yellow-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-200/80 transition hover:from-violet-400 hover:via-amber-400 hover:to-yellow-300">
+            <i data-feather="calendar" class="h-4 w-4"></i>
+            상담 예약
+          </button>
+        </div>
+        <button type="button" id="mobile-menu-toggle" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-400 md:hidden" aria-controls="mobile-nav" aria-expanded="false">
+          <span class="sr-only">모바일 메뉴 열기</span>
+          <i data-feather="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+    </header>
+
+    <div id="mobile-nav" class="fixed inset-0 z-50 hidden md:hidden">
+      <div data-backdrop class="absolute inset-0 bg-slate-900/40 opacity-0 transition-opacity duration-200 ease-out"></div>
+      <nav data-panel class="absolute right-0 top-0 flex h-full w-full max-w-xs translate-x-full flex-col bg-white px-6 py-8 shadow-2xl transition-transform duration-200 ease-out">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3 text-base font-semibold text-slate-900">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100 shadow-sm shadow-violet-200/60">
+              <i data-feather="cpu" class="h-5 w-5 text-violet-500"></i>
+            </span>
+            <span>SW 미래영재</span>
+          </div>
+          <button type="button" data-close class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:border-violet-200 hover:text-violet-600">
+            <span class="sr-only">모바일 메뉴 닫기</span>
+            <i data-feather="x" class="h-5 w-5"></i>
+          </button>
+        </div>
+        <div class="mt-8 space-y-2 text-sm font-medium text-slate-700">
+          <a href="#hero" data-nav-link class="block rounded-xl bg-violet-50 px-4 py-3 text-violet-600">홈</a>
+          <a href="#programs" data-nav-link class="block rounded-xl px-4 py-3 hover:bg-violet-50 hover:text-violet-600">프로그램</a>
+          <a href="#journey" data-nav-link class="block rounded-xl px-4 py-3 hover:bg-violet-50 hover:text-violet-600">로드맵</a>
+          <a href="#teachers" data-nav-link class="block rounded-xl px-4 py-3 hover:bg-violet-50 hover:text-violet-600">강사진</a>
+          <a href="#reviews" data-nav-link class="block rounded-xl px-4 py-3 hover:bg-violet-50 hover:text-violet-600">후기</a>
+        </div>
+        <div class="mt-6 flex flex-col gap-3 text-sm">
+          <button class="open-booking inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-500 via-amber-500 to-yellow-400 px-5 py-3 font-semibold text-white shadow-lg shadow-violet-200/70">
+            <i data-feather="calendar" class="h-4 w-4"></i>
+            무료 상담 예약
+          </button>
+          <button class="open-chat inline-flex items-center justify-center gap-2 rounded-full border border-violet-100 px-5 py-3 font-semibold text-violet-600 transition hover:bg-violet-50">
+            <i data-feather="message-circle" class="h-4 w-4"></i>
+            채팅 문의
+          </button>
+          <a href="tel:050714155007" data-nav-link class="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 px-5 py-3 font-medium text-slate-600 transition hover:border-violet-200 hover:text-violet-600">
+            <i data-feather="phone" class="h-4 w-4"></i>
+            전화 연결
+          </a>
+        </div>
+        <div class="mt-8 rounded-2xl border border-violet-100 bg-slate-50/80 px-4 py-4 text-xs text-slate-500">
+          <p class="font-semibold text-slate-700">운영 시간</p>
+          <p class="mt-1">평일 13:00~22:00 (1시간 단위)</p>
+          <p>주말 채팅 상담 전용</p>
+        </div>
+      </nav>
+    </div>
+
+    <div id="mobile-action-bar" class="fixed inset-x-0 bottom-0 z-40 flex items-center justify-center border-t border-violet-100 bg-white/95 px-4 py-3 text-sm text-slate-700 shadow-[0_-12px_32px_rgba(139,92,246,0.12)] md:hidden">
+      <div class="flex w-full max-w-lg items-center gap-3">
+        <button class="open-booking flex-1 rounded-full bg-gradient-to-r from-violet-500 via-amber-500 to-yellow-400 px-4 py-3 font-semibold text-white shadow-lg shadow-violet-200/70">
+          <div class="flex items-center justify-center gap-2">
+            <i data-feather="calendar" class="h-4 w-4"></i>
+            <span>상담 예약</span>
+          </div>
+        </button>
+        <button class="open-chat flex-1 rounded-full border border-violet-100 px-4 py-3 font-semibold text-violet-600 transition hover:bg-violet-50">
+          <div class="flex items-center justify-center gap-2">
+            <i data-feather="message-circle" class="h-4 w-4"></i>
+            <span>채팅 문의</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- Hero -->
+      <section id="hero" class="relative mx-auto max-w-7xl px-4 pb-32 pt-20 sm:px-6 md:pb-24 lg:px-8 lg:pt-28">
+        <div class="grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <div data-aos="fade-right">
+            <div class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1 text-xs uppercase tracking-wide text-violet-500">
+              <i data-feather="zap" class="h-3 w-3"></i>
+              미래 경쟁력을 만드는 컴퓨팅 아카데미
+            </div>
+            <h1 class="mt-6 text-3xl font-bold leading-snug text-slate-900 sm:text-5xl lg:text-6xl">
+              아이의 첫 프로젝트부터<br class="hidden sm:block"/> 진로 포트폴리오까지,
+              <span class="bg-gradient-to-r from-violet-500 to-amber-500 bg-clip-text text-transparent">SW 미래영재</span>가 함께 합니다.
+            </h1>
+            <p class="mt-6 max-w-xl text-base text-slate-600 sm:text-lg">
+              8인 이하 집중 수업, 실전 프로젝트 중심 커리큘럼, 주간 리포트로 학습 성장의 전 과정을 설계합니다.
+              무료 상담에서 학습 설계와 운영 방식을 바로 확인해 보세요.
+            </p>
+            <div class="mt-10 flex flex-wrap items-center gap-4">
+              <button class="open-booking inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-violet-500 via-amber-500 to-yellow-400 px-6 py-3 text-base font-semibold text-white shadow-xl shadow-violet-200/80 transition hover:from-violet-400 hover:via-amber-400 hover:to-yellow-300">
+                <i data-feather="calendar" class="h-5 w-5"></i>
+                무료 상담 예약하기
+              </button>
+              <button class="open-chat inline-flex items-center gap-3 rounded-full border border-violet-100 px-6 py-3 text-base font-medium text-violet-600 transition hover:bg-violet-50">
+                <i data-feather="message-square" class="h-5 w-5"></i>
+                상담 문의하기
+              </button>
+            </div>
+            <dl class="mt-12 grid gap-6 text-sm sm:grid-cols-3">
+              <div class="rounded-2xl border border-violet-100 bg-white px-5 py-4 shadow-sm">
+                <dt class="text-slate-500">연간 프로젝트</dt>
+                <dd class="mt-2 text-2xl font-semibold text-violet-600">120+</dd>
+              </div>
+              <div class="rounded-2xl border border-violet-100 bg-white px-5 py-4 shadow-sm">
+                <dt class="text-slate-500">출결·진도 케어</dt>
+                <dd class="mt-2 text-2xl font-semibold text-violet-600">100%</dd>
+              </div>
+              <div class="rounded-2xl border border-violet-100 bg-white px-5 py-4 shadow-sm">
+                <dt class="text-slate-500">만족도(상담 설문)</dt>
+                <dd class="mt-2 text-2xl font-semibold text-violet-600">4.9 / 5.0</dd>
+              </div>
+            </dl>
+            <div class="mt-10 rounded-2xl border border-yellow-200 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 p-6 text-sm text-yellow-600 shadow-lg shadow-yellow-100/60" data-aos="fade-right" data-aos-delay="50">
+              <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-yellow-500">
+                <i data-feather="cpu" class="h-3 w-3"></i>
+                DuoCodi AI Learning
+              </div>
+              <p class="mt-3 text-base leading-relaxed text-slate-900">
+                SW 미래영재는 과학기술정보통신부·NIPA ‘소상공인 AI 바우처’ 선정 기업 <span class="text-yellow-600">비앤브이솔루션</span>과 협력해
+                AI 학습 플랫폼 <span class="font-semibold text-yellow-600">듀오코디(DuoCodi)</span>를 공식 도입했습니다. 학생 개별 수준을 진단하고, AI 튜터가 즉시 피드백을 제공해
+                학습 몰입도와 만족도를 높입니다.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2 text-xs font-medium">
+                <span class="inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-white/80 px-3 py-1 text-yellow-600"><i data-feather="zap" class="h-3.5 w-3.5"></i>맞춤 설명 & 오류 분석</span>
+                <span class="inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-white/80 px-3 py-1 text-yellow-600"><i data-feather="bar-chart-2" class="h-3.5 w-3.5"></i>학부모 리포트 강화</span>
+                <span class="inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-white/80 px-3 py-1 text-yellow-600"><i data-feather="tablet" class="h-3.5 w-3.5"></i>정부지원 태블릿 제공</span>
+              </div>
+            </div>
+          </div>
+          <div class="relative" data-aos="fade-left">
+            <div class="floating-badge absolute -top-12 right-6 hidden min-w-[180px] rounded-2xl border border-violet-100 bg-white px-4 py-3 text-xs text-slate-600 shadow-lg shadow-violet-100 lg:block">
+              <div class="flex items-center gap-2 font-semibold text-violet-500">
+                <i data-feather="clock" class="h-4 w-4"></i>
+                프로젝트 기반 수업
+              </div>
+              <p class="mt-1 text-[13px] text-slate-500">실전 문제 해결력과 협업 능력을 키우는 스튜디오형 클래스</p>
+            </div>
+            <div class="glass-panel relative overflow-hidden rounded-[32px] border border-violet-100 p-6 shadow-2xl shadow-violet-100/70">
+              <div class="hero-grid absolute inset-0 opacity-30"></div>
+              <div class="relative space-y-6">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-slate-700">이번 주 하이라이트</span>
+                  <span class="text-xs text-slate-500">김해 율하 캠퍼스</span>
+                </div>
+                <div class="grid gap-4 rounded-2xl bg-white/70 p-4 shadow-inner shadow-violet-50">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p class="text-xs text-slate-500">Python × AI</p>
+                      <p class="text-base font-semibold text-slate-900">컴퓨터 비전 미니 프로젝트</p>
+                    </div>
+                    <span class="rounded-full border border-yellow-200 bg-yellow-100 px-3 py-1 text-xs text-yellow-600">중등 심화</span>
+                  </div>
+                  <p class="text-sm text-slate-600">학생들이 직접 촬영한 데이터를 YOLO 모델로 학습하고, 탐지 결과를 시각화합니다.</p>
+                </div>
+                <div class="grid gap-4 rounded-2xl bg-white/70 p-4 shadow-inner shadow-violet-50">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p class="text-xs text-slate-500">Physical Computing</p>
+                      <p class="text-base font-semibold text-slate-900">아두이노 스마트 팜</p>
+                    </div>
+                    <span class="rounded-full border border-amber-200 bg-amber-100 px-3 py-1 text-xs text-amber-600">초·중 연합</span>
+                  </div>
+                  <p class="text-sm text-slate-600">센서 데이터로 토양 수분을 분석하고, 모바일 앱에 실시간 알림을 전송합니다.</p>
+                </div>
+                <div class="flex items-center justify-between rounded-2xl border border-violet-100 bg-white p-4 shadow-sm">
+                  <div>
+                    <p class="text-xs text-slate-500">무료 상담 가능</p>
+                    <p class="text-base font-semibold text-slate-900">이번 주 예약 현황</p>
+                  </div>
+                  <div id="week-booking-rate" class="text-right text-3xl font-bold text-violet-500">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="ai-app-program" class="relative mt-20 overflow-hidden rounded-[36px] border border-violet-100/70 bg-white/85 shadow-xl shadow-violet-100/70 lg:col-span-2" data-aos="fade-up" data-aos-delay="180">
+            <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-violet-100/70 via-white/70 to-amber-100/60"></div>
+            <div class="relative p-8 sm:p-12">
+              <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                <p class="text-xs uppercase tracking-[0.35em] text-violet-500">Vibe Coding Program</p>
+                <h3 class="mt-4 text-3xl font-semibold text-slate-900 sm:text-4xl">Vibe Coding Lab </h3>
+                <p class="mt-4 max-w-3xl text-base leading-relaxed text-slate-600">
+                  <span class="font-semibold text-slate-900">“연구 아이디어를 말하면, 데모 앱이 바로 나오는”</span> 라이브 페어 코딩 부트캠프입니다.
+                  학생이 자연어로 기능을 설명하면 AI가 코드를 제안하고 강사가 곧바로 다듬어 배포까지 연결합니다.
+                  해커톤 예선 제출을 기준으로 주제 검증부터 산출물 패키징까지 전 과정을 코칭합니다.
+                </p>
+                <div class="mt-6 flex flex-wrap gap-3 text-sm">
+                  <a href="#panel-overview" data-open-panel="panel-overview" class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/90 px-4 py-2 font-medium text-violet-600 transition hover:border-violet-200 hover:bg-violet-50">
+                    <i data-feather="clipboard" class="h-4 w-4"></i>
+                    연구 계획서 보기
+                  </a>
+                  <a href="#panel-flow" data-open-panel="panel-flow" class="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-white/90 px-4 py-2 font-medium text-amber-600 transition hover:border-amber-200 hover:bg-amber-50">
+                    <i data-feather="divide" class="h-4 w-4"></i>
+                    단계별 진행 살펴보기
+                  </a>
+                  <a href="#panel-tracks" data-open-panel="panel-tracks" class="inline-flex items-center gap-2 rounded-full border border-rose-100 bg-white/90 px-4 py-2 font-medium text-rose-600 transition hover:border-rose-200 hover:bg-rose-50">
+                    <i data-feather="map" class="h-4 w-4"></i>
+                    커리큘럼 트랙 확인
+                  </a>
+                </div>
+                </div>
+                <div class="flex flex-col gap-2 text-sm text-slate-600">
+                  <span class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/90 px-4 py-2 font-medium text-violet-600 shadow-sm">
+                    <i data-feather="award" class="h-4 w-4"></i>
+                    한국코드페어 · 경상남도교육청 예선 대비
+                  </span>
+                  <span class="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-white/90 px-4 py-2 font-medium text-amber-600 shadow-sm">
+                    <i data-feather="zap" class="h-4 w-4"></i>
+                    주 1회 · 회당 50분 · 라이브 페어 코딩
+                  </span>
+                </div>
+            </div>
+
+            <div id="vibe-lab-panels" class="mt-10 space-y-4">
+              <details id="panel-overview" class="vibe-panel">
+                <summary>
+                  <span class="vibe-panel-title"><i data-feather="layers" class="h-5 w-5 text-violet-500"></i>프로젝트 예시 & 연구 계획서</span>
+                  <i data-feather="chevron-down" class="summary-icon h-5 w-5"></i>
+                </summary>
+                <div class="vibe-panel-content">
+                  <div class="grid gap-6 lg:grid-cols-2">
+                    <div id="vibe-examples" class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-violet-500">프로젝트 예시</p>
+                      <h4 class="text-2xl font-semibold text-slate-900">🎫 약봉투 사진 → 약 상세 설명</h4>
+                      <p class="text-sm leading-relaxed text-slate-600">약 봉투나 라벨 사진을 업로드하면 약 이름·용량·복용 시간·주의 문구를 읽고, 중학생도 이해하기 쉬운 말로 정리해 주는 웹앱입니다.</p>
+                      <ul class="space-y-2 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><span class="mt-1 text-violet-400">•</span><span>AI로 글자를 읽고, 정규식과 사전을 활용해 핵심 정보를 뽑아 카드 UI로 보여 줍니다.</span></li>
+                        <li class="flex items-start gap-2"><span class="mt-1 text-violet-400">•</span><span>결과는 PNG 카드와 CSV 표로 저장해 가족과 공유할 수 있습니다.</span></li>
+                        <li class="flex items-start gap-2"><span class="mt-1 text-violet-400">•</span><span>Hugging Face Space에 배포해 설치 없이 어디서나 실행 가능합니다.</span></li>
+                      </ul>
+                      <a href="https://huggingface.co/spaces/LLDDWW/MedCard" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-500 via-amber-500 to-yellow-400 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-200/70 transition hover:from-violet-400 hover:via-amber-400 hover:to-yellow-300">
+                        <i data-feather="external-link" class="h-4 w-4"></i>
+                        약봉투 복약 안내 앱 바로가기
+                      </a>
+                      <p class="text-xs text-slate-500">* 실제 복약 판단은 반드시 의사·약사의 지시에 따라 주세요.</p>
+                    </div>
+                    <div id="med-plan" class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+                      <h4 class="text-lg font-bold text-slate-900">연구 작품 설명서 (중학생용)</h4>
+                      <p class="mt-3 text-[15px] leading-relaxed text-slate-600">글씨 크기 12pt 기준, 학교 양식에 맞춰 문구 조정 가능합니다. 아래 내용을 참고해 연구 계획서를 제출하세요.</p>
+                      <ol class="mt-6 space-y-6 text-[15px] leading-relaxed text-slate-700">
+                        <li>
+                          <p class="font-semibold text-slate-900">1. 작품 주제</p>
+                          <p class="mt-2">약봉투 사진 → 약 상세 설명. 약 봉투나 약 라벨을 사진으로 찍으면, 약 이름·용량·복용 방법·주의 사항을 읽어 주고 쉬운 말로 정리해 주는 웹앱입니다.</p>
+                        </li>
+                        <li>
+                          <p class="font-semibold text-slate-900">2. 작품의 설명 (제안하는 해법, 이에 대한 근거)</p>
+                          <div class="mt-3 space-y-3">
+                            <div>
+                              <p class="font-medium text-slate-900">제안하는 해법</p>
+                              <ul class="mt-2 space-y-2 text-slate-600">
+                                <li class="flex items-start gap-2"><span class="mt-1 text-violet-400">•</span><span>사진 업로드: 약 봉투/라벨 사진을 올립니다.</span></li>
+                                <li class="flex items-start gap-2"><span class="mt-1 text-violet-400">•</span><span>문자 인식: 인공지능이 사진 속 글자를 읽습니다.</span></li>
+                                <li class="flex items-start gap-2"><span class="mt-1 text-violet-400">•</span><span>정보 뽑기(파싱): 약 이름, 용량, 복용 횟수, 시간대, 주의 문구를 찾아냅니다.</span></li>
+                                <li class="flex items-start gap-2"><span class="mt-1 text-violet-400">•</span><span>쉬운 설명 생성: 카드 UI와 쉬운 문장으로 결과를 보여 줍니다.</span></li>
+                                <li class="flex items-start gap-2"><span class="mt-1 text-violet-400">•</span><span>결과 저장/공유: PNG·CSV로 저장해 가족과 공유합니다.</span></li>
+                              </ul>
+                            </div>
+                            <div>
+                              <p class="font-medium text-slate-900">근거</p>
+                              <ul class="mt-2 space-y-2 text-slate-600">
+                                <li class="flex items-start gap-2"><span class="mt-1 text-amber-400">•</span><span>약 봉투 글씨는 작고 복잡해 어린이·어르신이 읽기 어렵습니다.</span></li>
+                                <li class="flex items-start gap-2"><span class="mt-1 text-amber-400">•</span><span>Hugging Face Space를 사용하면 설치 없이 웹브라우저에서 이용 가능합니다.</span></li>
+                              </ul>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <p class="font-semibold text-slate-900">3. 기존의 작품(해법)과의 차이점</p>
+                          <ul class="mt-2 space-y-2 text-slate-600">
+                            <li class="flex items-start gap-2"><span class="mt-1 text-rose-400">•</span><span>단순 텍스트가 아닌, 핵심만 모아 쉬운 문장으로 변환합니다.</span></li>
+                            <li class="flex items-start gap-2"><span class="mt-1 text-rose-400">•</span><span>표 모양 카드 UI로 약 이름·용량·횟수·시간대를 직관적으로 제공합니다.</span></li>
+                            <li class="flex items-start gap-2"><span class="mt-1 text-rose-400">•</span><span>주의 사항을 쉬운 말로 안내하고, 개인정보·의료 윤리를 명확히 고지합니다.</span></li>
+                          </ul>
+                        </li>
+                        <li>
+                          <p class="font-semibold text-slate-900">4. 결과</p>
+                          <div class="mt-2 space-y-2 text-slate-600">
+                            <p><span class="font-medium text-slate-900">작동 데모:</span> Hugging Face Space 웹 링크 1개</p>
+                            <p><span class="font-medium text-slate-900">성능(샘플 30장 기준):</span></p>
+                            <ul class="ml-4 mt-1 list-disc space-y-1 text-slate-600">
+                              <li>약 이름 인식 90% (27/30)</li>
+                              <li>용량·횟수 찾기 87% (26/30)</li>
+                              <li>시간대 찾기 83% (25/30)</li>
+                            </ul>
+                            <p><span class="font-medium text-slate-900">예시 출력:</span> “타이레놀 500mg — 하루 3번, 식후 1정. 졸릴 수 있어요. 과다 복용 주의.”</p>
+                            <p><span class="font-medium text-slate-900">제출물 패키지:</span> 데모 링크, 60초 시연 영상, README(4줄 요약), 지표 표</p>
+                            <p><span class="font-medium text-slate-900">활용:</span> 한국코드페어·경상남도교육청 해커톤 예선 제출에 바로 사용 가능</p>
+                            <p class="text-sm text-rose-500">주의: 이 앱은 안내용입니다. 정확한 복용 결정은 의료진 지시를 따르며, 개인정보가 노출된 사진은 업로드하지 않습니다.</p>
+                          </div>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </details>
+              <details id="panel-flow" class="vibe-panel">
+                <summary>
+                  <span class="vibe-panel-title"><i data-feather="activity" class="h-5 w-5 text-amber-500"></i>진행 흐름 & 주간 코칭</span>
+                  <i data-feather="chevron-down" class="summary-icon h-5 w-5"></i>
+                </summary>
+                <div class="vibe-panel-content">
+                  <div id="vibe-flow">
+                    <h4 class="text-xl font-bold text-slate-900">3단계면 충분해요 😊</h4>
+                    <div class="mt-5 grid gap-4 md:grid-cols-3">
+                      <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+                        <div class="text-2xl">🎤</div>
+                        <p class="mt-2 font-semibold text-slate-900">1) 아이디어 말하기</p>
+                        <p class="mt-2 text-sm text-slate-600">하고 싶은 기능을 자연스럽게 말해요. (예: "약봉투 사진에서 약 설명을 보고 싶어요")</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/95 p-6 shadow-sm">
+                        <div class="text-2xl">🤖</div>
+                        <p class="mt-2 font-semibold text-slate-900">2) AI와 함께 만들기</p>
+                        <p class="mt-2 text-sm text-slate-600">AI 코드 제안 → 강사와 수정 → 버튼 한 번에 실행하며 기능을 다듬습니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-amber-100 bg-white/95 p-6 shadow-sm">
+                        <div class="text-2xl">🚀</div>
+                        <p class="mt-2 font-semibold text-slate-900">3) 앱으로 보여주기</p>
+                        <p class="mt-2 text-sm text-slate-600">완성한 앱을 Hugging Face Space 링크로 공유하고 예선 제출까지 연결합니다.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="vibe-steps" class="mt-12">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+                      <h4 class="text-xl font-bold text-slate-900">진행 단계(7단계)</h4>
+                      <p class="text-sm text-slate-500">각 단계마다 결과물 점검 + 학부모 공유 리포트 제공</p>
+                    </div>
+                    <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500">STEP 1</p>
+                        <p class="mt-2 font-medium text-slate-900">아이디어 인터뷰</p>
+                        <p class="mt-2 text-sm text-slate-600">주제 적정성, 데이터 확보, 윤리 항목을 30분 안에 점검합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500">STEP 2</p>
+                        <p class="mt-2 font-medium text-slate-900">연구 계획서 작성</p>
+                        <p class="mt-2 text-sm text-slate-600">배경·목적·방법·유사연구·차별점을 1~2쪽으로 설계합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500">STEP 3</p>
+                        <p class="mt-2 font-medium text-slate-900">기능 명세 설계</p>
+                        <p class="mt-2 text-sm text-slate-600">입력·출력·지표·화면을 정의하고 바이브 코딩 회의로 구조를 확정합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500">STEP 4</p>
+                        <p class="mt-2 font-medium text-slate-900">앱 제작(라이브)</p>
+                        <p class="mt-2 text-sm text-slate-600">강사와 페어로 app.py를 구현하고 Hugging Face Space에 배포합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500">STEP 5</p>
+                        <p class="mt-2 font-medium text-slate-900">지표·데모</p>
+                        <p class="mt-2 text-sm text-slate-600">샘플 데이터 평가표와 60초 시연 영상을 제작합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500">STEP 6</p>
+                        <p class="mt-2 font-medium text-slate-900">문서 패키지</p>
+                        <p class="mt-2 text-sm text-slate-600">README 요약, 윤리 고지, 체크리스트를 완성합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm md:col-span-2 xl:col-span-1">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500">STEP 7</p>
+                        <p class="mt-2 font-medium text-slate-900">발표 리허설</p>
+                        <p class="mt-2 text-sm text-slate-600">1분 피치와 심사 Q&A 5문항을 리허설로 다듬습니다.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+              <details id="panel-tracks" class="vibe-panel">
+                <summary>
+                  <span class="vibe-panel-title"><i data-feather="git-branch" class="h-5 w-5 text-rose-500"></i>커리큘럼 트랙 & 제출물</span>
+                  <i data-feather="chevron-down" class="summary-icon h-5 w-5"></i>
+                </summary>
+                <div class="vibe-panel-content">
+                  <div id="vibe-tracks">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+                      <h4 class="text-xl font-bold text-slate-900">과정 선택</h4>
+                      <p class="text-sm text-slate-500">모든 트랙은 프로젝트 아카이브와 발표 자료까지 완성</p>
+                    </div>
+                    <div class="mt-6 grid gap-4 md:grid-cols-2">
+                      <div class="rounded-3xl border border-violet-100 bg-white/95 p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                          <div>
+                            <p class="text-sm font-semibold text-violet-500">예선·학교행사 대비</p>
+                            <p class="mt-1 text-lg font-bold text-slate-900">4주 패스트 트랙</p>
+                          </div>
+                          <span class="text-xs text-slate-500">주 2회 · 회당 90분</span>
+                        </div>
+                        <ul class="mt-4 space-y-2 text-sm leading-relaxed text-slate-600">
+                          <li><span class="text-violet-400">•</span> W1: 주제 확정·계획서(1차) / 윤리·저작권</li>
+                          <li><span class="text-violet-400">•</span> W2: 바이브 코딩#1 — UI 뼈대 / 최초 배포</li>
+                          <li><span class="text-violet-400">•</span> W3: 바이브 코딩#2 — 핵심 기능·지표 / README</li>
+                          <li><span class="text-violet-400">•</span> W4: 바이브 코딩#3 — 안정화 / 60초 영상 / 제출물 완성</li>
+                        </ul>
+                      </div>
+                      <div class="rounded-3xl border border-amber-100 bg-white/95 p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                          <div>
+                            <p class="text-sm font-semibold text-amber-500">완성도·확장성 중시</p>
+                            <p class="mt-1 text-lg font-bold text-slate-900">6주 정규 트랙</p>
+                          </div>
+                          <span class="text-xs text-slate-500">주 2회 · 회당 90분</span>
+                        </div>
+                        <ul class="mt-4 space-y-2 text-sm leading-relaxed text-slate-600">
+                          <li><span class="text-amber-400">•</span> W1: 배경·목적·유사연구 / 계획서(1차)</li>
+                          <li><span class="text-amber-400">•</span> W2: 방법·데이터·지표 설계 / 계획서(2차)</li>
+                          <li><span class="text-amber-400">•</span> W3: 바이브 코딩#1 — 입력·출력 / Space 배포</li>
+                          <li><span class="text-amber-400">•</span> W4: 바이브 코딩#2 — 모델 연동 / 저장(PNG·CSV)</li>
+                          <li><span class="text-amber-400">•</span> W5: 지표 측정·오류 분석 / 윤리 고지</li>
+                          <li><span class="text-amber-400">•</span> W6: 안정화·데모 영상·피치 코칭 / 제출 패키지</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="vibe-outcomes" class="mt-12">
+                    <h4 class="text-xl font-bold text-slate-900">수업이 끝나면 손에 쥐는 것</h4>
+                    <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-sm font-semibold text-violet-600">웹앱 링크</p>
+                        <p class="mt-2 text-sm text-slate-600">Hugging Face Space (공개/미공개 옵션)으로 전달드립니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-amber-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-sm font-semibold text-amber-600">60초 데모</p>
+                        <p class="mt-2 text-sm text-slate-600">시작→입력→결과→지표→고지를 담은 발표 영상.</p>
+                      </div>
+                      <div class="rounded-3xl border border-rose-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-sm font-semibold text-rose-600">README</p>
+                        <p class="mt-2 text-sm text-slate-600">문제·해결·지표·링크를 4줄 요약으로 정리합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm">
+                        <p class="text-sm font-semibold text-slate-700">지표 표</p>
+                        <p class="mt-2 text-sm text-slate-600">베이스라인 대비 개선 수치를 정리한 평가표.</p>
+                      </div>
+                      <div class="rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm md:col-span-2 xl:col-span-4">
+                        <p class="text-sm font-semibold text-slate-700">해커톤 제출 패키지</p>
+                        <p class="mt-2 text-sm text-slate-600">한국코드페어·경상남도교육청 등 예선 제출에 필요한 링크·영상·README·지표 자료까지 준비합니다.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+              <details id="panel-competencies" class="vibe-panel">
+                <summary>
+                  <span class="vibe-panel-title"><i data-feather="target" class="h-5 w-5 text-emerald-500"></i>성장 역량 & 학습 효과</span>
+                  <i data-feather="chevron-down" class="summary-icon h-5 w-5"></i>
+                </summary>
+                <div class="vibe-panel-content">
+                  <div id="vibe-competencies">
+                    <h4 class="text-xl font-bold text-slate-900">미래 AI 교육과 연결되는 역량</h4>
+                    <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-sm font-semibold text-violet-600">AI 리터러시</p>
+                        <p class="mt-2 text-sm text-slate-600">생성·분류 등 다양한 AI 과제를 이해합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-amber-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-sm font-semibold text-amber-600">데이터 윤리</p>
+                        <p class="mt-2 text-sm text-slate-600">개인정보 비식별, 저작권, 출처 표기 원칙을 실습합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-rose-100 bg-white/90 p-5 shadow-sm">
+                        <p class="text-sm font-semibold text-rose-600">문제 해결</p>
+                        <p class="mt-2 text-sm text-slate-600">연구 질문 → 기능 명세 → 지표 설계로 사고력을 키웁니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm">
+                        <p class="text-sm font-semibold text-slate-700">커뮤니케이션</p>
+                        <p class="mt-2 text-sm text-slate-600">1분 피치, README, 영상 스토리라인으로 표현력을 강화합니다.</p>
+                      </div>
+                    </div>
+                    <p class="mt-4 text-sm text-slate-500">* 대회: <span class="font-semibold text-slate-900">한국코드페어</span>(해커톤/공모전), <span class="font-semibold text-slate-900">경상남도교육청</span> SW·AI 해커톤 등 예선 제출 기준에 맞춰 제작·검수합니다. 일정·자격·지도교사 요건은 각 대회 공지를 따릅니다.</p>
+                  </div>
+                </div>
+              </details>
+              <details id="panel-safety" class="vibe-panel">
+                <summary>
+                  <span class="vibe-panel-title"><i data-feather="shield" class="h-5 w-5 text-slate-500"></i>안전·FAQ · 상담 안내</span>
+                  <i data-feather="chevron-down" class="summary-icon h-5 w-5"></i>
+                </summary>
+                <div class="vibe-panel-content">
+                  <div id="vibe-safety" class="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm">
+                    <h4 class="text-xl font-bold text-slate-900">안전·윤리·저작권</h4>
+                    <ul class="mt-4 space-y-2 text-sm leading-relaxed text-slate-600 list-disc list-inside">
+                      <li>개인정보 비식별: 이름·생년월일·처방번호 등 민감 정보 업로드 금지</li>
+                      <li>출처·라이선스 표기: 모델·데이터·코드 출처와 허가 범위를 README에 명시</li>
+                      <li>AI 사용 공개: 사용 도구, 버전, 설정을 README에 기록</li>
+                      <li>현장 본선 대비: 네트워크·설치 제한 시 오프라인 데모 백업 준비</li>
+                    </ul>
+                  </div>
+                  <div id="vibe-faq" class="mt-12">
+                    <h4 class="text-xl font-bold text-slate-900">자주 묻는 질문</h4>
+                    <div class="mt-6 grid gap-4 md:grid-cols-2">
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="font-semibold text-slate-900">바이브 코딩이 뭔가요?</p>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600"><span class="font-semibold text-violet-500">바이브 코딩</span>은 AI에게 자연어로 원하는 기능을 설명하면 코드를 생성·수정해 주는 개발 방식입니다. 수업에서는 학생 설명 → AI 코드 제안 → 강사 검토/수정 → 배포를 빠르게 반복합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="font-semibold text-slate-900">대회 제출에 적합한가요?</p>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">예. 대부분 예선은 링크·영상·README·지표 중심 심사이며, 세부 규정은 대회 공지를 따릅니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="font-semibold text-slate-900">우리 아이 연구 주제도 가능한가요?</p>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">의학·교육·생활 편의·환경 등 폭넓게 가능합니다. 첫 상담에서 적정성과 윤리를 함께 점검합니다.</p>
+                      </div>
+                      <div class="rounded-3xl border border-violet-100 bg-white/90 p-5 shadow-sm">
+                        <p class="font-semibold text-slate-900">결과물 소유권은 누구에게?</p>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">학생/학부모 명의 저장소에 보관하며, 학원은 멘토링과 제작 지원 역할을 담당합니다. 내부 약관을 준수합니다.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="vibe-cta" class="mt-12 rounded-3xl border border-violet-100 bg-gradient-to-r from-violet-100 via-white to-amber-100 p-6 sm:p-8 shadow-lg shadow-violet-100/60">
+                    <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <p class="text-lg font-bold text-slate-900">상담 신청</p>
+                        <p class="mt-2 text-sm text-slate-600">학부모 성함·학생 학년·희망 주제를 남겨 주세요. 24시간 내로 답변드립니다.</p>
+                      </div>
+                      <div class="flex flex-wrap gap-3">
+                        <a href="#" class="inline-flex items-center gap-2 rounded-full bg-rose-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-rose-200/60 transition hover:bg-rose-500">
+                          <i data-feather="message-circle" class="h-4 w-4"></i>
+                          카카오채널
+                        </a>
+                        <a href="#" class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-slate-400/40 transition hover:bg-slate-800">
+                          <i data-feather="mail" class="h-4 w-4"></i>
+                          이메일 문의
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Programs -->
+      <section id="programs" class="relative border-t border-slate-200 bg-gradient-to-b from-violet-50/60 via-white to-white py-20">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
+            <div data-aos="fade-right">
+              <p class="text-sm uppercase tracking-[0.3em] text-violet-500">Programs</p>
+              <h2 class="section-title mt-4 text-3xl font-bold text-slate-900 sm:text-4xl">아이의 흥미와 속도에 맞춘 단계형 프로그램</h2>
+              <p class="mt-3 max-w-xl text-base text-slate-600">입문부터 자격증, 포트폴리오 준비까지 다양한 트랙을 개별 맞춤 설계로 연결합니다. AI 학습 플랫폼 <span class="font-semibold text-violet-500">듀오코디</span>와 연동해 학생별 진도에 맞춘 설명과 과제를 제공합니다.</p>
+            </div>
+            <div data-aos="fade-left" class="flex items-center gap-3 rounded-full border border-violet-100 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
+              <i data-feather="target" class="h-4 w-4 text-violet-500"></i>
+              수준 진단 + 커리큘럼 설계는 무료 상담에서 바로 안내드립니다.
+            </div>
+          </div>
+          <div class="mt-12 grid gap-8 lg:grid-cols-2">
+            <article class="relative overflow-hidden rounded-3xl border border-violet-100 bg-white p-8 shadow-lg shadow-violet-100" data-aos="zoom-in">
+              <div class="absolute inset-0 bg-gradient-to-br from-violet-100 via-transparent to-transparent"></div>
+              <div class="relative">
+                <div class="flex items-center gap-3 text-sm text-violet-500">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100">
+                    <i data-feather="award" class="h-5 w-5"></i>
+                  </span>
+                  <span class="font-semibold">IT·코딩 자격증 트랙</span>
+                </div>
+                <h3 class="mt-6 text-2xl font-semibold text-slate-900">실전 문제풀이 + 컴퓨팅 사고력</h3>
+                <p class="mt-4 text-sm leading-relaxed text-slate-600">
+                  실기 대비를 위한 기출 분석, 컴퓨팅 사고력 강화 워크숍, 모의 테스트 리포트로 최종 합격을 목표합니다.
+                </p>
+                <ul class="mt-6 grid gap-2 text-sm text-slate-600">
+                  <li class="flex items-center gap-2"><span class="text-violet-400">•</span> YBM COS, 정보처리기능사 등 자격증 라인업</li>
+                  <li class="flex items-center gap-2"><span class="text-violet-400">•</span> 개인 취약 유형 기반 맞춤 풀이</li>
+                  <li class="flex items-center gap-2"><span class="text-violet-400">•</span> 학부모 공유용 주간 리포트 제공</li>
+                </ul>
+              </div>
+            </article>
+            <article class="relative overflow-hidden rounded-3xl border border-amber-100 bg-white p-8 shadow-lg shadow-amber-100" data-aos="zoom-in" data-aos-delay="150">
+              <div class="absolute inset-0 bg-gradient-to-br from-amber-100 via-transparent to-transparent"></div>
+              <div class="relative">
+                <div class="flex items-center gap-3 text-sm text-amber-500">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-100">
+                    <i data-feather="image" class="h-5 w-5"></i>
+                  </span>
+                  <span class="font-semibold">그래픽·영상·콘텐츠 제작</span>
+                </div>
+                <h3 class="mt-6 text-2xl font-semibold text-slate-900">스토리텔링으로 완성하는 브랜드 프로젝트</h3>
+                <p class="mt-4 text-sm leading-relaxed text-slate-600">
+                  포토샵, 프리미어, 애프터이펙트를 활용해 기획·제작·발표까지 연결되는 팀 프로젝트를 진행합니다.
+                </p>
+                <ul class="mt-6 grid gap-2 text-sm text-slate-600">
+                  <li class="flex items-center gap-2"><span class="text-amber-400">•</span> 콘텐츠 기획 → 스토리보드 → 편집 실습</li>
+                  <li class="flex items-center gap-2"><span class="text-amber-400">•</span> SNS 채널 운영 시뮬레이션</li>
+                  <li class="flex items-center gap-2"><span class="text-amber-400">•</span> 현업 피드백 기반 리뷰 세션</li>
+                </ul>
+              </div>
+            </article>
+            <article class="relative overflow-hidden rounded-3xl border border-yellow-100 bg-white p-8 shadow-lg shadow-yellow-100" data-aos="zoom-in" data-aos-delay="300">
+              <div class="absolute inset-0 bg-gradient-to-br from-yellow-100 via-transparent to-transparent"></div>
+              <div class="relative">
+                <div class="flex items-center gap-3 text-sm text-yellow-500">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-yellow-100">
+                    <i data-feather="code" class="h-5 w-5"></i>
+                  </span>
+                  <span class="font-semibold">파이썬·블록코딩 융합</span>
+                </div>
+                <h3 class="mt-6 text-2xl font-semibold text-slate-900">블록으로 개념을 잡고 파이썬으로 확장</h3>
+                <p class="mt-4 text-sm leading-relaxed text-slate-600">
+                  단계별 프로젝트로 알고리즘 사고력과 데이터 활용 능력을 동시에 기릅니다. 자동화, 시각화, AI까지 연계합니다.
+                </p>
+                <ul class="mt-6 grid gap-2 text-sm text-slate-600">
+                  <li class="flex items-center gap-2"><span class="text-yellow-400">•</span> 언플러그드 → 블록 → 텍스트 기반 전환</li>
+                  <li class="flex items-center gap-2"><span class="text-yellow-400">•</span> 데이터 시각화 및 API 연동</li>
+                  <li class="flex items-center gap-2"><span class="text-yellow-400">•</span> 창의 융합 공모전 대비</li>
+                </ul>
+              </div>
+            </article>
+            <article class="relative overflow-hidden rounded-3xl border border-fuchsia-100 bg-white p-8 shadow-lg shadow-fuchsia-100" data-aos="zoom-in" data-aos-delay="450">
+              <div class="absolute inset-0 bg-gradient-to-br from-fuchsia-100 via-transparent to-transparent"></div>
+              <div class="relative">
+                <div class="flex items-center gap-3 text-sm text-fuchsia-500">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-fuchsia-100">
+                    <i data-feather="cpu" class="h-5 w-5"></i>
+                  </span>
+                  <span class="font-semibold">피지컬 컴퓨팅·아두이노</span>
+                </div>
+                <h3 class="mt-6 text-2xl font-semibold text-slate-900">센서 + 코딩으로 만드는 메이커 프로젝트</h3>
+                <p class="mt-4 text-sm leading-relaxed text-slate-600">
+                  센서 데이터 수집, 제어 로직 설계, 팀 협업으로 IoT 작품을 완성하고 발표까지 진행합니다.
+                </p>
+                <ul class="mt-6 grid gap-2 text-sm text-slate-600">
+                  <li class="flex items-center gap-2"><span class="text-fuchsia-400">•</span> 회로 설계 & 안전 교육</li>
+                  <li class="flex items-center gap-2"><span class="text-fuchsia-400">•</span> 3D 프린팅 + 피지컬 제작 연계</li>
+                  <li class="flex items-center gap-2"><span class="text-fuchsia-400">•</span> 공모전 & 대회 출품 지원</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Journey -->
+      <section id="journey" class="relative py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div class="text-center" data-aos="fade-up">
+            <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Roadmap</p>
+            <h2 class="section-title mx-auto mt-4 text-3xl font-bold text-slate-900 sm:text-4xl">성장 단계에 맞춘 로드맵</h2>
+            <p class="mt-3 text-base text-slate-600">연령별 목표와 프로젝트를 연결해 스스로 성장 경로를 그릴 수 있도록 돕습니다.</p>
+          </div>
+        <div class="mt-16 grid gap-10 md:grid-cols-3">
+          <div class="relative rounded-3xl border border-yellow-100 bg-white p-8 shadow-md shadow-yellow-100/60" data-aos="fade-up">
+              <div class="floating-badge absolute -top-10 left-8 hidden rounded-full border border-yellow-200 bg-yellow-50 px-4 py-2 text-xs text-yellow-600 md:block">Beginner</div>
+              <h3 class="text-lg font-semibold text-slate-900">초등</h3>
+              <p class="mt-3 text-sm text-slate-600">게임·스토리 제작으로 재미있게 입문 → 피지컬 컴퓨팅으로 불멍 LED, 라인트레이서 구현</p>
+              <ul class="mt-6 space-y-2 text-sm text-slate-600">
+                <li><span class="text-yellow-400">•</span> 스크래치, 엔트리, 피코보드</li>
+                <li><span class="text-yellow-400">•</span> 창의 융합 챌린지</li>
+                <li><span class="text-yellow-400">•</span> 발표 & 스토리텔링 훈련</li>
+              </ul>
+            </div>
+            <div class="relative rounded-3xl border border-violet-100 bg-white p-8 shadow-md shadow-violet-100/60" data-aos="fade-up" data-aos-delay="120">
+              <div class="floating-badge absolute -top-10 left-8 hidden rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-xs text-violet-600 md:block">Accelerate</div>
+              <h3 class="text-lg font-semibold text-slate-900">중등</h3>
+              <p class="mt-3 text-sm text-slate-600">파이썬 기초 → 문제 해결력 심화 → 데이터 분석·자격증 대비로 실전 감각 강화</p>
+              <ul class="mt-6 space-y-2 text-sm text-slate-600">
+                <li><span class="text-violet-400">•</span> 알고리즘 기반 코딩 테스트</li>
+                <li><span class="text-violet-400">•</span> 데이터 시각화·AI 기초 실습</li>
+                <li><span class="text-violet-400">•</span> 팀 프로젝트 & 코드 리뷰</li>
+              </ul>
+            </div>
+            <div class="relative rounded-3xl border border-fuchsia-100 bg-white p-8 shadow-md shadow-fuchsia-100/60" data-aos="fade-up" data-aos-delay="240">
+              <div class="floating-badge absolute -top-10 left-8 hidden rounded-full border border-fuchsia-200 bg-fuchsia-50 px-4 py-2 text-xs text-fuchsia-600 md:block">Launch</div>
+              <h3 class="text-lg font-semibold text-slate-900">고등·일반</h3>
+              <p class="mt-3 text-sm text-slate-600">포트폴리오 프로젝트, 영상 제작, 아두이노 심화 → 진로 코칭과 입시 컨설팅으로 연결</p>
+              <ul class="mt-6 space-y-2 text-sm text-slate-600">
+                <li><span class="text-fuchsia-400">•</span> 연구·산학 연계 프로젝트</li>
+                <li><span class="text-fuchsia-400">•</span> 진로 로드맵 설계</li>
+                <li><span class="text-fuchsia-400">•</span> 발표·면접 대비 워크숍</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Teachers -->
+      <section id="teachers" class="relative border-y border-slate-200 bg-gradient-to-b from-white via-violet-50/40 to-white py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col items-start justify-between gap-12 lg:flex-row lg:items-end">
+            <div data-aos="fade-right">
+              <p class="text-sm uppercase tracking-[0.3em] text-violet-500">Team</p>
+              <h2 class="section-title mt-4 text-3xl font-bold text-slate-900 sm:text-4xl">실무 · 연구 경험이 풍부한 전담 강사진</h2>
+              <p class="mt-3 max-w-xl text-base text-slate-600">개인별 학습 루틴 설계부터 프로젝트 멘토링까지 전문 강사진이 밀착 코칭합니다.</p>
+            </div>
+            <div data-aos="fade-left" class="rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+              <i data-feather="user-check" class="mr-2 inline-block h-4 w-4 text-violet-500"></i>
+              모든 강사는 주간 리포트 & 학부모 피드백을 직접 담당합니다.
+            </div>
+          </div>
+          <div class="mt-14 grid gap-10 md:grid-cols-2">
+            <article class="relative overflow-hidden rounded-3xl border border-violet-100 bg-white p-6 shadow-lg shadow-violet-100" data-aos="fade-up">
+              <div class="relative flex flex-col items-center text-center">
+                <img src="https://i.pravatar.cc/200?img=12" alt="허지연 원장" class="h-32 w-32 rounded-full border-4 border-violet-100 object-cover"/>
+                <h3 class="mt-4 text-xl font-semibold text-slate-900">허지연 원장</h3>
+                <p class="text-sm text-violet-500">컴퓨터 교육 · 커리큘럼 설계</p>
+                <ul class="mt-6 space-y-2 text-sm text-slate-600">
+                  <li>• 20+년 현장 강의, 수준 진단 & 맞춤 학습 설계</li>
+                  <li>• 학습 동기 설계 · 습관 코칭</li>
+                  <li>• 결석/지연 케어 프로세스로 진도 격차 최소화</li>
+                  <li>• 보호자 대상 주간 리포트 운영</li>
+                </ul>
+              </div>
+            </article>
+            <article class="relative overflow-hidden rounded-3xl border border-amber-100 bg-white p-6 shadow-lg shadow-amber-100" data-aos="fade-up" data-aos-delay="200">
+              <div class="relative flex flex-col items-center text-center">
+                <img src="https://i.pravatar.cc/200?img=5" alt="이동욱 강사" class="h-32 w-32 rounded-full border-4 border-amber-100 object-cover"/>
+                <h3 class="mt-4 text-xl font-semibold text-slate-900">이동욱 강사</h3>
+                <p class="text-sm text-amber-500">AI · 데이터 · 프로젝트 멘토링</p>
+                <ul class="mt-6 space-y-2 text-sm text-slate-600">
+                  <li>• KAIST 전기및전자공학부 학·석사</li>
+                  <li>• AI/데이터 실무 및 연구 경험</li>
+                  <li>• 논문·특허·국제학회 발표 경력</li>
+                  <li>• 포트폴리오 프로젝트 전 과정 멘토링</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reviews -->
+      <section id="reviews" class="relative bg-gradient-to-b from-white via-slate-50 to-white py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div class="text-center" data-aos="fade-up">
+            <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Testimonials</p>
+            <h2 class="section-title mx-auto mt-4 text-3xl font-bold text-slate-900 sm:text-4xl">SW 미래영재의 약속</h2>
+            <p class="mt-3 text-base text-slate-600">학부모와 학생이 직접 체감하는 학습 변화, 투명한 소통, 확실한 결과를 만들어갑니다.</p>
+          </div>
+          <div class="mt-14 grid gap-6 md:grid-cols-2">
+            <article class="rounded-3xl border border-violet-100 bg-white p-6 shadow-lg shadow-violet-100" data-aos="fade-right">
+              <div class="flex items-center gap-3">
+                <span class="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-violet-500"><i data-feather="users" class="h-5 w-5"></i></span>
+                <h3 class="text-lg font-semibold text-slate-900">8인 이하 집중 지도</h3>
+              </div>
+              <p class="mt-4 text-sm leading-relaxed text-slate-600">질문이 바로 해결되는 밀착 수업으로 학습 효율을 높이고, 개별 플래너로 진도와 과제를 관리합니다.</p>
+            </article>
+            <article class="rounded-3xl border border-amber-100 bg-white p-6 shadow-lg shadow-amber-100" data-aos="fade-left">
+              <div class="flex items-center gap-3">
+                <span class="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-500"><i data-feather="clipboard" class="h-5 w-5"></i></span>
+                <h3 class="text-lg font-semibold text-slate-900">주간 피드백 리포트</h3>
+              </div>
+              <p class="mt-4 text-sm leading-relaxed text-slate-600">학습 목표, 달성도, 보강 필요 영역을 주간 보고서로 공유해 학부모와 투명하게 소통합니다.</p>
+            </article>
+            <article class="rounded-3xl border border-yellow-100 bg-white p-6 shadow-lg shadow-yellow-100" data-aos="fade-right" data-aos-delay="150">
+              <div class="flex items-center gap-3">
+                <span class="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 text-yellow-500"><i data-feather="monitor" class="h-5 w-5"></i></span>
+                <h3 class="text-lg font-semibold text-slate-900">프로젝트 중심 수업</h3>
+              </div>
+              <p class="mt-4 text-sm leading-relaxed text-slate-600">실제로 작동하는 결과물을 완성하고 발표하며, 포트폴리오에 바로 활용할 수 있는 산출물을 만듭니다.</p>
+            </article>
+            <article class="rounded-3xl border border-fuchsia-100 bg-white p-6 shadow-lg shadow-fuchsia-100" data-aos="fade-left" data-aos-delay="150">
+              <div class="flex items-center gap-3">
+                <span class="flex h-12 w-12 items-center justify-center rounded-full bg-fuchsia-100 text-fuchsia-500"><i data-feather="bell" class="h-5 w-5"></i></span>
+                <h3 class="text-lg font-semibold text-slate-900">출결·진도 알림</h3>
+              </div>
+              <p class="mt-4 text-sm leading-relaxed text-slate-600">출결, 진도 이슈는 즉시 안내하며, 보강 일정까지 원스톱으로 조율해 학습 공백을 최소화합니다.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Space & Location -->
+      <section class="relative border-y border-slate-200 bg-gradient-to-b from-violet-50/50 via-white to-white py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div data-aos="fade-right">
+              <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Studio</p>
+              <h2 class="section-title mt-4 text-3xl font-bold text-slate-900 sm:text-4xl">현장 중심 학습 공간</h2>
+              <p class="mt-3 text-base text-slate-600">팀 프로젝트를 위한 스튜디오, 피지컬 컴퓨팅 존, 온라인 면접 대비실 등 학습 몰입 환경을 제공합니다.</p>
+              <dl class="mt-10 grid gap-6 text-sm sm:grid-cols-3">
+                <div class="rounded-2xl border border-violet-100 bg-white px-4 py-4 shadow-sm">
+                  <dt class="text-slate-500">학원 위치</dt>
+                  <dd class="mt-2 text-base font-semibold text-slate-900">김해시 율하1로 102 경보코아 203호</dd>
+                </div>
+                <div class="rounded-2xl border border-violet-100 bg-white px-4 py-4 shadow-sm">
+                  <dt class="text-slate-500">운영 시간</dt>
+                  <dd class="mt-2 text-base font-semibold text-slate-900">평일 13:00-22:00 (1시간 단위)<br/>주말 채팅 상담 전용</dd>
+                </div>
+                <div class="rounded-2xl border border-violet-100 bg-white px-4 py-4 shadow-sm">
+                  <dt class="text-slate-500">문의</dt>
+                  <dd class="mt-2 text-base font-semibold text-slate-900">0507-1415-5007</dd>
+                </div>
+              </dl>
+              <div class="mt-10 flex flex-wrap gap-4">
+                <a href="https://naver.me/xoHigSrx" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-5 py-2.5 text-sm font-medium text-violet-600 hover:border-violet-200 hover:bg-violet-50">
+                  <i data-feather="map-pin" class="h-4 w-4"></i>
+                  네이버 지도로 보기
+                </a>
+                <button class="open-booking inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 via-amber-500 to-yellow-400 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-200/80 hover:from-violet-400 hover:via-amber-400 hover:to-yellow-300">
+                  <i data-feather="shield" class="h-4 w-4"></i>
+                  상담 예약 바로가기
+                </button>
+              </div>
+            </div>
+            <div data-aos="fade-left" class="relative overflow-hidden rounded-[28px] border border-violet-100 bg-white shadow-2xl shadow-violet-100">
+              <img src="https://images.unsplash.com/photo-1580894892281-5de064ef0ec5?auto=format&fit=crop&w=1200&q=80" alt="학원 공간" class="h-full w-full object-cover"/>
+              <div class="absolute inset-0 bg-gradient-to-tr from-violet-200/40 via-white/40 to-transparent"></div>
+              <div class="absolute bottom-6 left-6 right-6 rounded-2xl border border-white/80 bg-white/90 p-4 shadow-lg">
+                <p class="text-xs uppercase tracking-[0.2em] text-violet-500">Learning Studio</p>
+                <p class="mt-2 text-base font-semibold text-slate-900">프로젝트 상황실 & 피어 리뷰 라운지</p>
+                <p class="mt-1 text-xs text-slate-600">코칭 라운지에서 실시간 피드백 · 발표 리허설 진행</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="relative py-20">
+        <div class="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-r from-violet-100 via-amber-100 to-yellow-100 p-1 shadow-2xl shadow-violet-100" data-aos="zoom-in">
+          <div class="rounded-[calc(theme(borderRadius.3xl)_-_0.25rem)] bg-white px-8 py-12 text-center sm:px-12">
+            <p class="text-sm uppercase tracking-[0.3em] text-violet-500">Experience</p>
+            <h2 class="mt-6 text-3xl font-semibold text-slate-900 sm:text-4xl">지금, 아이의 첫 프로젝트를 함께 설계해 보세요</h2>
+            <p class="mt-4 text-base text-slate-600">무료 상담에서 수준 진단, 커리큘럼 제안, 학습 플래너 활용 가이드까지 한 번에 안내해 드립니다.</p>
+            <p class="mt-2 text-sm text-slate-500">평일 13:00~22:00 사이에 1시간 단위로 예약 가능하며, 주말에는 채팅으로 빠르게 연결해 드립니다.</p>
+            <div class="mt-10 flex flex-wrap justify-center gap-4">
+              <button class="open-booking inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-violet-500 via-amber-500 to-yellow-400 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-violet-200/80 transition hover:from-violet-400 hover:via-amber-400 hover:to-yellow-300">
+                <i data-feather="calendar" class="h-5 w-5"></i>
+                무료 상담 예약
+              </button>
+              <button class="open-chat inline-flex items-center gap-3 rounded-full border border-violet-100 px-6 py-3 text-base font-semibold text-violet-600 transition hover:bg-violet-50">
+                <i data-feather="message-circle" class="h-5 w-5"></i>
+                빠른 상담 요청
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 bg-white py-16">
+      <div class="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+        <div>
+          <div class="flex items-center gap-3 text-lg font-semibold text-slate-900">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100"><i data-feather="cpu" class="h-5 w-5 text-violet-500"></i></span>
+            SW 미래영재 컴퓨터학원
+          </div>
+          <p class="mt-4 text-sm text-slate-600">실전 프로젝트와 맞춤형 코칭으로 아이의 성장을 가장 가까이에서 지원합니다.</p>
+          <div class="mt-5 flex gap-4 text-slate-400">
+            <a href="#" class="hover:text-violet-500"><i data-feather="facebook"></i></a>
+            <a href="#" class="hover:text-violet-500"><i data-feather="instagram"></i></a>
+            <a href="#" class="hover:text-violet-500"><i data-feather="youtube"></i></a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">프로그램</h3>
+          <ul class="mt-4 space-y-3 text-sm text-slate-600">
+            <li><a href="#programs" class="hover:text-violet-500">IT·코딩 자격증</a></li>
+            <li><a href="#programs" class="hover:text-violet-500">파이썬·블록코딩</a></li>
+            <li><a href="#programs" class="hover:text-violet-500">그래픽·영상 편집</a></li>
+            <li><a href="#programs" class="hover:text-violet-500">피지컬 컴퓨팅·아두이노</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">학원 정보</h3>
+          <ul class="mt-4 space-y-3 text-sm text-slate-600">
+            <li><a href="https://naver.me/xoHigSrx" target="_blank" rel="noopener" class="hover:text-violet-500">오시는 길</a></li>
+            <li><span>운영 시간: 평일 13:00-22:00 (1시간 단위 예약)</span></li>
+            <li><span>주말: 채팅 상담 전용</span></li>
+            <li><span>학원 소개 · 교육 철학</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">연락처</h3>
+          <ul class="mt-4 space-y-3 text-sm text-slate-600">
+            <li><a href="tel:050714155007" class="hover:text-violet-500">전화: 0507-1415-5007</a></li>
+            <li><a href="mailto:donguk9805@gmail.com" class="hover:text-violet-500">이메일: donguk9805@gmail.com</a></li>
+            <li class="flex gap-3 pt-2">
+              <a href="#" class="hover:text-violet-500"><i data-feather="message-square"></i></a>
+              <a href="#" class="hover:text-violet-500"><i data-feather="mail"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="mx-auto mt-12 flex max-w-6xl flex-col items-center justify-between gap-4 border-t border-slate-200 px-4 pt-8 text-xs text-slate-500 sm:flex-row sm:px-6 lg:px-8">
+        <p>&copy; 2025 SW 미래영재 컴퓨터학원. All rights reserved.</p>
+        <div class="flex items-center gap-6">
+          <a href="#" class="hover:text-violet-500">개인정보처리방침</a>
+          <a href="#" class="hover:text-violet-500">이용약관</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+    <!-- ====== 예약 모달 ====== -->
+  <div id="booking-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+    <div class="relative mx-auto flex h-full w-full max-w-5xl items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
+      <div class="relative flex h-full w-full max-h-[94vh] flex-col overflow-y-auto rounded-[28px] border border-slate-100 bg-white shadow-2xl shadow-slate-900/10 lg:max-h-[86vh] lg:overflow-y-auto">
+        <div class="flex items-start justify-between border-b border-slate-100 px-6 py-6 sm:px-8">
+          <div class="flex items-start gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff4ff] text-[#1b64da]">
+              <i data-feather="calendar"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Booking</p>
+              <h3 class="text-xl font-semibold text-slate-900">무료 상담 예약</h3>
+              <p class="mt-1 text-sm text-slate-500">세 가지 단계로 간편하게 상담을 신청해 보세요.</p>
+            </div>
+          </div>
+          <button id="booking-close" class="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100" aria-label="닫기"><i data-feather="x"></i></button>
+        </div>
+        <div class="flex flex-1 flex-col lg:flex-row">
+          <div class="flex-1 overflow-visible px-6 py-6 sm:px-8 with-safe lg:overflow-y-auto">
+            <div class="rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-4 sm:px-6">
+              <ol class="flex flex-col gap-4 text-sm text-slate-500 sm:flex-row sm:items-center sm:gap-6">
+                <li class="step-item flex items-center gap-3" data-step="1">
+                  <span class="step-badge flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">1</span>
+                  <div>
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">Step 1</p>
+                    <p class="text-sm font-medium text-slate-800">프로그램 · 강사</p>
+                  </div>
+                </li>
+                <div class="hidden flex-1 border-t border-dashed border-slate-200 sm:block"></div>
+                <li class="step-item flex items-center gap-3" data-step="2">
+                  <span class="step-badge flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">2</span>
+                  <div>
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">Step 2</p>
+                    <p class="text-sm font-medium text-slate-800">날짜 · 시간</p>
+                  </div>
+                </li>
+                <div class="hidden flex-1 border-t border-dashed border-slate-200 sm:block"></div>
+                <li class="step-item flex items-center gap-3" data-step="3">
+                  <span class="step-badge flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">3</span>
+                  <div>
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">Step 3</p>
+                    <p class="text-sm font-medium text-slate-800">신청서</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+
+            <section id="step-1" class="step-section mt-8 space-y-6">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white px-5 py-5 text-sm text-slate-500 shadow-sm shadow-slate-200/60">
+                  <span class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">프로그램</span>
+                  <select id="program-select" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                    <option>IT·코딩 자격증</option>
+                    <option>그래픽·영상 편집</option>
+                    <option>파이썬·블록코딩</option>
+                    <option>피지컬컴퓨팅·아두이노</option>
+                  </select>
+                  <span class="text-xs text-slate-400">50분 학습 진단 후 10분 커리큘럼 안내로 진행돼요.</span>
+                </label>
+                <label class="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white px-5 py-5 text-sm text-slate-500 shadow-sm shadow-slate-200/60">
+                  <span class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">강사</span>
+                  <select id="teacher-select" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                    <option value="허지연 원장">허지연 원장</option>
+                    <option value="이동욱 강사">이동욱 강사</option>
+                  </select>
+                  <span class="flex items-center gap-2 text-xs text-slate-400"><i data-feather="clock" class="h-4 w-4"></i>선택한 강사의 빈 시간만 캘린더에 표시됩니다.</span>
+                </label>
+              </div>
+              <div class="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white px-5 py-5 shadow-sm shadow-slate-200/60 sm:flex-row sm:items-center sm:justify-between">
+                <div class="text-sm text-slate-600">예약 가능 기간 <span id="range-label" class="ml-2 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-900"></span></div>
+                <button id="to-step-2" class="k-pressable inline-flex items-center gap-2 rounded-full bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-600">
+                  <span>다음 단계</span>
+                  <i data-feather="arrow-right" class="h-4 w-4"></i>
+                </button>
+              </div>
+            </section>
+
+            <section id="step-2" class="step-section mt-8 hidden space-y-6">
+              <div class="grid gap-6 md:grid-cols-[1.15fr_0.85fr]">
+                <div class="rounded-2xl border border-slate-200/80 bg-white px-5 py-5 shadow-sm shadow-slate-200/60">
+                  <div class="mb-4 flex items-center justify-between">
+                    <button id="prev-month" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-600 transition hover:border-blue-200 hover:text-blue-600" aria-label="이전 달"><i data-feather="chevron-left"></i></button>
+                    <div id="month-label" class="text-base font-semibold text-slate-900">YYYY년 MM월</div>
+                    <button id="next-month" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-600 transition hover:border-blue-200 hover:text-blue-600" aria-label="다음 달"><i data-feather="chevron-right"></i></button>
+                  </div>
+                  <div class="-mx-2 overflow-x-auto pb-2 sm:mx-0">
+                    <div class="mx-2 min-w-[320px] sm:mx-0">
+                      <div class="grid grid-cols-7 gap-1 text-center text-xs uppercase tracking-wide text-slate-400">
+                        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+                      </div>
+                      <div id="calendar-grid" class="mt-3 grid grid-cols-7 gap-1 text-center"></div>
+                    </div>
+                  </div>
+                </div>
+                <div id="slot-pane" class="flex flex-col gap-5 rounded-2xl border border-slate-200/80 bg-white px-5 py-5 shadow-sm shadow-slate-200/60">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p class="text-xs font-medium uppercase tracking-[0.24em] text-slate-400">선택한 날짜</p>
+                      <p id="selected-date-label" class="mt-1 text-lg font-semibold text-slate-900">-</p>
+                    </div>
+                    <button class="k-pressable inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-500 transition hover:border-blue-200 hover:text-blue-600" data-back>
+                      <i data-feather="arrow-left" class="h-4 w-4"></i>
+                      다시 선택
+                    </button>
+                  </div>
+                  <p id="selected-date-hint" class="text-xs text-slate-400">평일을 선택하면 예약 가능한 시간이 표시됩니다.</p>
+                  <div id="slot-container" class="time-slot-grid text-sm text-slate-600">
+                    <p class="col-span-full rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-center text-xs text-slate-500">날짜를 먼저 선택해주세요.</p>
+                  </div>
+                  <div class="flex flex-col gap-3 rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:gap-4">
+                    <span class="w-full text-center text-sm text-slate-600 sm:w-auto sm:flex-1 sm:text-left">상담은 60분 내외로 진행됩니다.</span>
+                    <button id="to-step-3" class="k-pressable inline-flex items-center gap-2 self-center rounded-full bg-blue-500 px-4 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-600 sm:ml-auto sm:self-auto sm:shrink-0" disabled>
+                      다음 단계
+                      <i data-feather="arrow-right" class="h-4 w-4"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="step-3" class="step-section mt-8 hidden space-y-6">
+              <form id="booking-form" class="space-y-6">
+                <div class="rounded-2xl border border-slate-200/80 bg-white px-5 py-5 shadow-sm shadow-slate-200/60">
+                  <p class="text-sm font-semibold text-slate-900">예약 요약</p>
+                  <div class="mt-3 grid gap-3 text-sm text-slate-600">
+                    <div class="flex flex-wrap items-center gap-3">
+                      <span class="text-slate-400">프로그램</span>
+                      <span class="min-w-0 flex-1 text-left font-medium text-slate-900 sm:text-right" id="sum-program">-</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                      <span class="text-slate-400">강사</span>
+                      <span class="min-w-0 flex-1 text-left font-medium text-slate-900 sm:text-right" id="sum-teacher">-</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                      <span class="text-slate-400">날짜</span>
+                      <span class="min-w-0 flex-1 text-left font-medium text-slate-900 sm:text-right" id="sum-date">-</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                      <span class="text-slate-400">시간</span>
+                      <span class="min-w-0 flex-1 text-left font-medium text-slate-900 sm:text-right" id="sum-time">-</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                      <span class="text-slate-400">소요</span>
+                      <span class="min-w-0 flex-1 text-left font-medium text-slate-900 sm:text-right">50분 학습 진단 + 10분 상담</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                      <span class="text-slate-400">장소</span>
+                      <span class="min-w-0 flex-1 text-left font-medium text-slate-900 sm:text-right">김해시 율하1로 102 경보코아 203호</span>
+                    </div>
+                  </div>
+                  <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs text-blue-600">
+                    <span class="font-medium text-blue-500">확인:</span> <span id="summary-title">-</span>
+                  </div>
+                </div>
+                <div class="grid gap-4 md:grid-cols-2">
+                  <label class="flex flex-col gap-2 text-sm text-slate-500">
+                    <span>학생 이름</span>
+                    <input id="input-name" required class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100" placeholder="이름을 입력하세요"/>
+                  </label>
+                  <label class="flex flex-col gap-2 text-sm text-slate-500">
+                    <span>학년</span>
+                    <select id="input-grade" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                      <option value="초등">초등</option>
+                      <option value="중등">중등</option>
+                      <option value="고등">고등</option>
+                      <option value="일반">일반</option>
+                    </select>
+                  </label>
+                  <label class="flex flex-col gap-2 text-sm text-slate-500">
+                    <span>연락처</span>
+                    <input id="input-phone" required class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100" placeholder="010-0000-0000"/>
+                  </label>
+                  <label class="flex flex-col gap-2 text-sm text-slate-500">
+                    <span>참고 사항</span>
+                    <textarea id="input-notes" rows="3" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100" placeholder="알리고 싶은 사항이 있다면 입력해주세요"></textarea>
+                  </label>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <button class="k-pressable inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-500 transition hover:border-blue-200 hover:bg-blue-50" data-back>
+                    <i data-feather="arrow-left" class="h-4 w-4"></i>
+                    이전 단계
+                  </button>
+                  <div class="flex items-center gap-3">
+                    <a id="gcal-link" href="#" target="_blank" class="hidden rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-500 transition hover:border-blue-200 hover:bg-blue-50">Google 캘린더</a>
+                    <a id="ics-link" href="#" download class="hidden rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-500 transition hover:border-blue-200 hover:bg-blue-50">.ics 다운로드</a>
+                    <button id="submit-booking" type="submit" class="k-pressable inline-flex items-center gap-2 rounded-full bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-600">
+                      <i data-feather="calendar" class="h-4 w-4"></i>
+                      예약 확정
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </section>
+          </div>
+          <aside class="flex min-h-[240px] flex-col gap-4 border-t border-slate-100 bg-slate-50 px-6 py-6 text-sm text-slate-600 sm:px-8 lg:min-w-[240px] lg:max-h-full lg:overflow-y-auto lg:border-t-0 lg:border-l">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Checklist</p>
+              <div class="mt-3 space-y-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-4 shadow-sm shadow-slate-200/60">
+                <p class="text-sm font-semibold text-slate-900">예약 안내</p>
+                <ul class="space-y-2 text-xs text-slate-500">
+                  <li>• 접수 후 채팅/문자로 확정 안내를 드립니다.</li>
+                  <li>• 일정 변경은 최소 하루 전에 요청해 주세요.</li>
+                  <li>• 상담 뒤 맞춤 커리큘럼 제안을 보내드립니다.</li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Contact</p>
+              <div class="mt-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-4 text-xs text-slate-500 shadow-sm shadow-slate-200/60">
+                <p class="text-sm font-semibold text-slate-900">문의</p>
+                <p class="mt-2">0507-1415-5007</p>
+                <p>donguk9805@gmail.com</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+    <div id="toast" class="fixed left-1/2 top-6 hidden -translate-x-1/2 rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-sm text-blue-600 shadow-lg">예약이 저장되었습니다</div>
+  </div>
+  <!-- ====== /예약 모달 ====== -->
+
+
+  <!-- 성공 다이얼로그 -->
+  <div id="success-dialog" class="fixed inset-0 z-[2147483646] hidden">
+    <div class="absolute inset-0 bg-slate-200/80 backdrop-blur-sm"></div>
+    <div class="relative mx-auto mt-40 w-full max-w-sm rounded-2xl border border-violet-100 bg-white p-6 text-center shadow-2xl shadow-violet-100">
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-yellow-50 text-yellow-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h3 class="mt-4 text-lg font-semibold text-slate-900">예약이 접수되었습니다</h3>
+      <p class="mt-2 text-sm text-slate-600">확정 안내는 채팅/문자로 곧 드릴게요.</p>
+    </div>
+  </div>
+
+  <script>
+    // --- AOS & Feather setup ---
+    AOS.init({ duration: 800, easing: 'ease-out-quad', once: true });
+    feather.replace();
+
+    // --- Mobile menu & action bar ---
+    const mobileToggle = document.getElementById('mobile-menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    if (mobileToggle && mobileNav) {
+      const mobileBackdrop = mobileNav.querySelector('[data-backdrop]');
+      const mobilePanel = mobileNav.querySelector('[data-panel]');
+      if (!mobileBackdrop || !mobilePanel) {
+        mobileToggle.addEventListener('click', () => mobileNav.classList.toggle('hidden'));
+      } else {
+        const closeButtons = mobileNav.querySelectorAll('[data-close]');
+        const navLinks = mobileNav.querySelectorAll('[data-nav-link]');
+        let mobileNavOpen = false;
+
+        const openMobileNav = () => {
+          if (mobileNavOpen) return;
+          mobileNavOpen = true;
+          mobileNav.classList.remove('hidden');
+          requestAnimationFrame(() => {
+            mobileBackdrop.classList.remove('opacity-0');
+            mobileBackdrop.classList.add('opacity-100');
+            mobilePanel.classList.remove('translate-x-full');
+          });
+          mobileToggle.setAttribute('aria-expanded', 'true');
+          document.body.classList.add('overflow-hidden', 'mobile-nav-open');
+        };
+
+        const closeMobileNav = () => {
+          if (!mobileNavOpen) return;
+          mobileNavOpen = false;
+          mobileBackdrop.classList.remove('opacity-100');
+          mobileBackdrop.classList.add('opacity-0');
+          mobilePanel.classList.add('translate-x-full');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+          document.body.classList.remove('mobile-nav-open');
+          document.body.classList.remove('overflow-hidden');
+          setTimeout(() => {
+            if (!mobileNavOpen) mobileNav.classList.add('hidden');
+          }, 220);
+        };
+
+        mobileToggle.addEventListener('click', () => {
+          if (mobileNavOpen) closeMobileNav(); else openMobileNav();
+        });
+        mobileBackdrop?.addEventListener('click', closeMobileNav);
+        closeButtons.forEach((btn) => btn.addEventListener('click', closeMobileNav));
+        navLinks.forEach((link) => link.addEventListener('click', closeMobileNav));
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') closeMobileNav();
+        });
+      }
+    }
+
+    // ===== Crisp =====
+    window.$crisp = window.$crisp || [];
+    window.CRISP_WEBSITE_ID = "aa5eeb9f-4d45-4e94-bd7e-9669115e0d3d";
+    (function () {
+      const d = document;
+      const s = d.createElement("script");
+      s.src = "https://client.crisp.chat/l.js";
+      s.async = 1;
+      d.getElementsByTagName("head")[0].appendChild(s);
+    })();
+    window.$crisp.push(["set", "locale", "ko"]);
+    function openChatWidget() {
+      if (window.$crisp) {
+        $crisp.push(["do", "chat:open"]);
+      }
+    }
+    document.addEventListener('click', (event) => {
+      const trigger = event.target.closest('.open-chat');
+      if (!trigger) return;
+      event.preventDefault();
+      if (mobileToggle && document.body.classList.contains('mobile-nav-open')) {
+        mobileToggle.click();
+      }
+      openChatWidget();
+    });
+
+    document.querySelectorAll('[data-open-panel]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        const panelId = link.getAttribute('data-open-panel');
+        const panel = panelId ? document.getElementById(panelId) : null;
+        if (!panel) return;
+        document.querySelectorAll('.vibe-panel').forEach((other) => {
+          if (other !== panel) other.removeAttribute('open');
+        });
+        panel.setAttribute('open', '');
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 70);
+      });
+    });
+
+    // ===== 예약 모달 =====
+    const state = {
+      program: 'IT·코딩 자격증',
+      teacher: '허지연 원장',
+      date: null,
+      time: null,
+      rangeDays: 45,
+      durationMin: 60,
+    };
+    const API_BASE = "https://booking-proxy.donguk9805.workers.dev";
+    const ALL_TEACHERS = ['허지연 원장', '이동욱 강사'];
+    let reservedCache = {};
+
+    const pad = (n) => String(n).padStart(2, '0');
+    const dayK = (d) => ['일','월','화','수','목','금','토'][d];
+    const fmtDate = (dt) => `${dt.getFullYear()}년 ${pad(dt.getMonth()+1)}월 ${pad(dt.getDate())}일 (${dayK(dt.getDay())})`;
+    const ymd = (dt) => `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+
+    const WEEKEND_DAYS = new Set([0, 6]);
+    const WEEKDAY_START_HOUR = 13;
+    const WEEKDAY_END_HOUR = 21; // 21:00 시작 → 22:00 종료
+    const WEEKDAY_SLOTS = Array.from({ length: WEEKDAY_END_HOUR - WEEKDAY_START_HOUR + 1 }, (_, idx) => `${pad(WEEKDAY_START_HOUR + idx)}:00`);
+
+    const isWeekend = (dt) => WEEKEND_DAYS.has(dt.getDay());
+    const isSmallScreen = () => window.matchMedia('(max-width: 768px)').matches;
+
+    function startOfWeek(dt) {
+      const start = new Date(dt);
+      start.setHours(0, 0, 0, 0);
+      const day = start.getDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      start.setDate(start.getDate() + diff);
+      return start;
+    }
+
+    async function fetchReservedRange(teacher, fromYmd, toYmd) {
+      const url = `${API_BASE}?mode=reserved&teacher=${encodeURIComponent(teacher)}&from=${fromYmd}&to=${toYmd}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        return data && data.ok ? (data.reserved || {}) : {};
+      } catch (err) {
+        console.error('주간 예약 로드 실패', err);
+        return {};
+      }
+    }
+
+    async function updateWeeklyRate() {
+      const meter = document.getElementById('week-booking-rate');
+      if (!meter) return;
+      meter.textContent = '...';
+
+      const today = new Date();
+      const weekStart = startOfWeek(today);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+
+      const fromYmd = ymd(weekStart);
+      const toYmd = ymd(weekEnd);
+
+      let weekdays = 0;
+      const iter = new Date(weekStart);
+      while (iter <= weekEnd) {
+        if (!isWeekend(iter)) weekdays += 1;
+        iter.setDate(iter.getDate() + 1);
+      }
+
+      const totalSlots = weekdays * WEEKDAY_SLOTS.length * ALL_TEACHERS.length;
+      if (!totalSlots) {
+        meter.textContent = '0%';
+        return;
+      }
+
+      let reservedCount = 0;
+      for (const teacher of ALL_TEACHERS) {
+        const reserved = await fetchReservedRange(teacher, fromYmd, toYmd);
+        Object.entries(reserved).forEach(([dateKey, times]) => {
+          if (dateKey >= fromYmd && dateKey <= toYmd && Array.isArray(times)) {
+            reservedCount += times.length;
+          }
+        });
+      }
+
+      const rate = Math.max(0, Math.min(100, Math.floor((reservedCount / totalSlots) * 100)));
+      meter.textContent = `${rate}%`;
+    }
+
+    function scrollSlotPaneOnMobile() {
+      if (!isSmallScreen()) return;
+      const pane = document.getElementById('slot-pane');
+      if (!pane) return;
+      setTimeout(() => pane.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    }
+    function focusStep3OnMobile() {
+      if (!isSmallScreen()) return;
+      const formEl = document.getElementById('booking-form');
+      if (!formEl) return;
+      setTimeout(() => formEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    }
+
+    function toast(msg = '완료되었습니다') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 1800);
+    }
+
+    let lockScrollY = 0;
+    function lockBody() {
+      lockScrollY = window.scrollY || 0;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${lockScrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+    }
+    function unlockBody() {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      window.scrollTo(0, lockScrollY);
+    }
+
+    function openBooking() {
+      document.getElementById('booking-modal').classList.remove('hidden');
+      document.body.classList.add('booking-open');
+      lockBody();
+      feather.replace();
+    }
+    function closeBooking() {
+      document.getElementById('booking-modal').classList.add('hidden');
+      document.body.classList.remove('booking-open');
+      unlockBody();
+    }
+
+    document.querySelectorAll('.open-booking').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mobileToggle && document.body.classList.contains('mobile-nav-open')) {
+          mobileToggle.click();
+        }
+        openBooking();
+      });
+    });
+    document.getElementById('booking-close').addEventListener('click', closeBooking);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeBooking(); });
+
+    function setStep(step) {
+      document.querySelectorAll('.step-section').forEach((sec, idx) => {
+        sec.classList.toggle('hidden', (idx + 1) !== step);
+      });
+      document.querySelectorAll('.step-item').forEach((el, idx) => {
+        const badge = el.querySelector('.step-badge');
+        if (idx + 1 <= step) {
+          badge.classList.remove('bg-slate-100', 'text-slate-600');
+          badge.classList.add('bg-violet-500', 'text-white');
+        } else {
+          badge.classList.add('bg-slate-100', 'text-slate-600');
+          badge.classList.remove('bg-violet-500', 'text-white');
+        }
+      });
+      feather.replace();
+    }
+
+    function renderRangeLabel() {
+      const start = new Date();
+      const end = new Date();
+      end.setDate(end.getDate() + state.rangeDays - 1);
+      document.getElementById('range-label').textContent =
+        `${start.getFullYear()}.${pad(start.getMonth()+1)}.${pad(start.getDate())} ~ ${end.getFullYear()}.${pad(end.getMonth()+1)}.${pad(end.getDate())}`;
+    }
+
+    function inRange(dt) {
+      const s = new Date(); s.setHours(0,0,0,0);
+      const e = new Date(); e.setHours(0,0,0,0); e.setDate(e.getDate() + state.rangeDays - 1);
+      const t = new Date(dt); t.setHours(0,0,0,0);
+      return t >= s && t <= e;
+    }
+
+    async function loadReserved(teacher, fromYmd, toYmd) {
+      const url = `${API_BASE}?mode=reserved&teacher=${encodeURIComponent(teacher)}&from=${fromYmd}&to=${toYmd}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        reservedCache = data.ok ? (data.reserved || {}) : {};
+      } catch (e) {
+        console.error('reserved 로드 실패', e);
+        reservedCache = {};
+      }
+    }
+
+    function monthRangeYmd(dt) {
+      const first = new Date(dt.getFullYear(), dt.getMonth(), 1);
+      const last = new Date(dt.getFullYear(), dt.getMonth() + 1, 0);
+      const start = new Date(); start.setHours(0,0,0,0);
+      const end = new Date(); end.setDate(end.getDate() + state.rangeDays - 1);
+      const s = new Date(Math.max(start, first));
+      const e = new Date(Math.min(end, last));
+      const fmt = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      return { from: fmt(s), to: fmt(e) };
+    }
+
+    function getSlotsForDate(dt) {
+      if (isWeekend(dt)) return [];
+      const key = ymd(dt);
+      const reserved = reservedCache[key] || [];
+      return WEEKDAY_SLOTS.filter((t) => !reserved.includes(t));
+    }
+
+    function resetTimeSelection() {
+      state.time = null;
+      document.getElementById('sum-time').textContent = '-';
+      document.getElementById('summary-title').textContent = `${state.program} · ${state.teacher}`;
+      const stepBtn = document.getElementById('to-step-3');
+      if (stepBtn) stepBtn.disabled = true;
+      const hintEl = document.getElementById('selected-date-hint');
+      if (hintEl) {
+        hintEl.classList.remove('text-amber-500', 'text-slate-400', 'text-slate-500');
+        hintEl.classList.add('text-slate-400');
+        hintEl.textContent = '평일을 선택하면 예약 가능한 시간이 표시됩니다.';
+      }
+    }
+
+    let calCursor = new Date(); calCursor.setDate(1);
+
+    async function renderCalendar() {
+      document.getElementById('month-label').textContent = `${calCursor.getFullYear()}년 ${pad(calCursor.getMonth()+1)}월`;
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = '<div class="col-span-7 py-8 text-center text-sm text-slate-400">불러오는 중…</div>';
+
+      const rng = monthRangeYmd(calCursor);
+      await loadReserved(state.teacher, rng.from, rng.to);
+      grid.innerHTML = '';
+
+      const firstDay = new Date(calCursor);
+      const startWeekday = firstDay.getDay();
+      const lastDate = new Date(calCursor.getFullYear(), calCursor.getMonth() + 1, 0).getDate();
+
+      for (let i = 0; i < startWeekday; i += 1) {
+        grid.appendChild(document.createElement('div'));
+      }
+
+      for (let d = 1; d <= lastDate; d += 1) {
+        const dt = new Date(calCursor.getFullYear(), calCursor.getMonth(), d);
+        const inWin = inRange(dt);
+        const weekend = isWeekend(dt);
+        const slots = inWin ? getSlotsForDate(dt) : [];
+        let level = 'none';
+        if (inWin) {
+          if (weekend) level = 'chat';
+          else if (slots.length >= 6) level = 'easy';
+          else if (slots.length >= 3) level = 'mid';
+          else if (slots.length >= 1) level = 'tight';
+        }
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'relative flex h-16 flex-col items-center justify-center rounded-lg border border-slate-200 bg-white text-sm transition hover:border-violet-200 hover:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-violet-300';
+        btn.disabled = !inWin;
+        btn.innerHTML = `
+          <span class="text-xs ${btn.disabled ? 'text-slate-500' : 'text-slate-900'}">${d}</span>
+          <span class="mt-2 h-1 w-8 rounded-full ${
+            level === 'easy' ? 'bg-yellow-400/80' :
+            level === 'mid' ? 'bg-amber-400/80' :
+            level === 'tight' ? 'bg-rose-400/80' :
+            level === 'chat' ? 'bg-amber-400/80' : 'bg-slate-200'
+          }"></span>
+          ${level === 'chat' ? '<span class="mt-1 text-[10px] font-semibold uppercase tracking-wide text-amber-500">Chat</span>' : ''}
+        `;
+        if (!inWin) {
+          btn.classList.add('cursor-not-allowed', 'opacity-30');
+        } else {
+          if (level === 'none') {
+            btn.classList.add('opacity-60');
+          }
+          if (level === 'chat') {
+            btn.classList.remove('border-slate-200', 'bg-white');
+            btn.classList.add('border-amber-200', 'bg-amber-50');
+          }
+          btn.addEventListener('click', () => {
+            state.date = dt;
+            resetTimeSelection();
+            document.getElementById('selected-date-label').textContent = fmtDate(dt);
+            renderSlots(dt);
+            grid.querySelectorAll('button').forEach((b) => b.classList.remove('ring-2', 'ring-violet-400'));
+            btn.classList.add('ring-2', 'ring-violet-400');
+            scrollSlotPaneOnMobile();
+          });
+        }
+        grid.appendChild(btn);
+      }
+    }
+
+    function renderSlots(dt) {
+      const wrap = document.getElementById('slot-container');
+      wrap.innerHTML = '';
+      wrap.className = 'time-slot-grid text-sm text-slate-600';
+      const slots = getSlotsForDate(dt);
+      const weekend = isWeekend(dt);
+      const hintEl = document.getElementById('selected-date-hint');
+      document.getElementById('sum-date').textContent = fmtDate(dt);
+      if (!slots.length) {
+        resetTimeSelection();
+        if (hintEl) {
+          hintEl.classList.remove('text-amber-500', 'text-slate-400', 'text-slate-500');
+          hintEl.classList.add(weekend ? 'text-amber-500' : 'text-slate-400');
+          hintEl.textContent = weekend
+            ? '주말에는 채팅 상담만 운영합니다.'
+            : '다른 날짜나 시간을 선택해 주세요.';
+        }
+        if (weekend) {
+          wrap.innerHTML = `
+            <div class="col-span-full rounded-2xl border border-blue-100 bg-blue-50/80 px-4 py-4 text-sm text-blue-600 shadow-sm">
+              <p class="text-base font-semibold text-slate-900">주말 상담은 채팅으로 안내해요</p>
+              <p class="mt-2 text-xs text-slate-600">평일 예약을 원하시면 다른 날짜를 선택해 주세요. 급한 문의는 채팅으로 바로 연결해 드립니다.</p>
+              <button class="open-chat mt-3 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-600 transition hover:border-blue-300 hover:bg-blue-50">채팅으로 상담하기</button>
+            </div>
+          `;
+        } else {
+          wrap.innerHTML = `
+            <div class="col-span-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600 shadow-sm">
+              <p class="text-base font-semibold text-slate-900">이미 예약이 가득 찼어요</p>
+              <p class="mt-2 text-xs text-slate-500">다른 날짜나 시간을 선택해 주세요. 필요하면 채팅으로 빠르게 안내해 드립니다.</p>
+              <button class="open-chat mt-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-blue-200 hover:text-blue-600">채팅 상담 연결</button>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      if (hintEl) {
+        hintEl.classList.remove('text-amber-500', 'text-slate-400', 'text-slate-500');
+        hintEl.classList.add('text-slate-500');
+        hintEl.textContent = '아래에서 원하는 시간을 선택하세요.';
+      }
+
+      const now = new Date();
+      const isToday = (new Date().toDateString() === dt.toDateString());
+
+      slots.forEach((t) => {
+        const [hh, mm] = t.split(':').map(Number);
+        const candidate = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), hh, mm);
+        const past = isToday && candidate < now;
+
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'w-full rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-900 transition hover:border-violet-300 hover:bg-violet-50';
+        b.textContent = t;
+        b.dataset.slot = t;
+        if (past) {
+          b.classList.add('opacity-40', 'cursor-not-allowed');
+        } else {
+          b.addEventListener('click', () => {
+            state.time = t;
+            document.getElementById('sum-time').textContent = t;
+            document.getElementById('summary-title').textContent = `${state.program} · ${state.teacher} · ${fmtDate(state.date)} ${state.time}`;
+            document.getElementById('to-step-3').disabled = false;
+            wrap.querySelectorAll('button[data-slot]').forEach((x) => x.classList.remove('border-violet-400', 'bg-violet-50', 'text-violet-600'));
+            b.classList.add('border-violet-400', 'bg-violet-50', 'text-violet-600');
+            if (isSmallScreen()) {
+              openStep3(true);
+            } else {
+              const proceedBtn = document.getElementById('to-step-3');
+              if (proceedBtn) {
+                setTimeout(() => proceedBtn.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+              }
+            }
+          });
+        }
+        wrap.appendChild(b);
+      });
+    }
+
+    function renderSummary() {
+      document.getElementById('sum-program').textContent = state.program || '-';
+      document.getElementById('sum-teacher').textContent = state.teacher || '-';
+      document.getElementById('sum-date').textContent = state.date ? fmtDate(state.date) : '-';
+      document.getElementById('sum-time').textContent = state.time || '-';
+      const titleParts = [state.program, state.teacher];
+      if (state.date) titleParts.push(fmtDate(state.date));
+      if (state.time) titleParts.push(state.time);
+      document.getElementById('summary-title').textContent = titleParts.filter(Boolean).join(' · ');
+    }
+
+    function toUTCISOStringKST(localDate, hhmm, durationMin) {
+      const [H, M] = hhmm.split(':').map(Number);
+      const start = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), H, M, 0);
+      const end = new Date(start.getTime() + durationMin * 60000);
+      const fmt = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z/, 'Z');
+      return { dtStartZ: fmt(start), dtEndZ: fmt(end) };
+    }
+
+    function buildICS(summary, description, location, localDate, hhmm, durationMin) {
+      const { dtStartZ, dtEndZ } = toUTCISOStringKST(localDate, hhmm, durationMin);
+      const uid = `swmirae-${Date.now()}@booking`;
+      const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//SWMirae//Booking//KO\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\nBEGIN:VEVENT\nUID:${uid}\nDTSTAMP:${dtStartZ}\nDTSTART:${dtStartZ}\nDTEND:${dtEndZ}\nSUMMARY:${summary}\nDESCRIPTION:${description.replace(/\n/g,'\\n')}\nLOCATION:${location}\nEND:VEVENT\nEND:VCALENDAR`;
+      return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+    }
+
+    function buildGCalURL(summary, details, location, localDate, hhmm, durationMin) {
+      const { dtStartZ, dtEndZ } = toUTCISOStringKST(localDate, hhmm, durationMin);
+      const base = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
+      const text = '&text=' + encodeURIComponent(summary);
+      const dates = '&dates=' + dtStartZ + '/' + dtEndZ;
+      const det = '&details=' + encodeURIComponent(details);
+      const loc = '&location=' + encodeURIComponent(location);
+      return base + text + dates + det + loc;
+    }
+
+    document.getElementById('to-step-2').addEventListener('click', async () => {
+      setStep(2);
+      renderRangeLabel();
+      calCursor = new Date(); calCursor.setDate(1);
+      await renderCalendar();
+      document.getElementById('selected-date-label').textContent = '-';
+      const placeholderHTML = '<p class="col-span-full rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-center text-xs text-slate-500">날짜를 먼저 선택해주세요.</p>';
+      const slotReset = document.getElementById('slot-container');
+      slotReset.className = 'time-slot-grid text-sm text-slate-600';
+      slotReset.innerHTML = placeholderHTML;
+      resetTimeSelection();
+    });
+
+    document.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', (e) => {
+      e.preventDefault();
+      const step3Visible = !document.getElementById('step-3').classList.contains('hidden');
+      if (step3Visible) setStep(2); else setStep(1);
+    }));
+
+    function openStep3(auto = false) {
+      if (!state.date || !state.time) return;
+      setStep(3);
+      renderSummary();
+      const loc = '경남 김해시 율하1로 102 경보코아 203호';
+      const summary = `SW 미래영재 무료 상담 - ${state.program} (${state.teacher})`;
+      const details = `프로그램: ${state.program}\n강사: ${state.teacher}\n예약일: ${fmtDate(state.date)} ${state.time}\n소요: 50분 학습 진단 + 10분 상담`;
+      const icsUrl = buildICS(summary, details, loc, state.date, state.time, state.durationMin);
+      const gUrl = buildGCalURL(summary, details, loc, state.date, state.time, state.durationMin);
+      const icsA = document.getElementById('ics-link'); icsA.href = icsUrl; icsA.classList.remove('hidden');
+      const gA = document.getElementById('gcal-link'); gA.href = gUrl; gA.classList.remove('hidden');
+      if (auto) focusStep3OnMobile();
+    }
+
+    document.getElementById('to-step-3').addEventListener('click', () => openStep3(false));
+
+    document.getElementById('program-select').addEventListener('change', (e) => {
+      state.program = e.target.value;
+      document.getElementById('sum-program').textContent = state.program;
+      document.getElementById('summary-title').textContent = `${state.program} · ${state.teacher}`;
+    });
+
+    document.getElementById('teacher-select').addEventListener('change', async (e) => {
+      state.teacher = e.target.value;
+      document.getElementById('sum-teacher').textContent = state.teacher;
+      state.date = null;
+      resetTimeSelection();
+      document.getElementById('sum-date').textContent = '-';
+      document.getElementById('selected-date-label').textContent = '-';
+      const placeholder = '<p class="col-span-full rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-center text-xs text-slate-500">날짜를 먼저 선택해주세요.</p>';
+      const slotPane = document.getElementById('slot-container');
+      slotPane.className = 'time-slot-grid text-sm text-slate-600';
+      slotPane.innerHTML = placeholder;
+      if (!document.getElementById('step-2').classList.contains('hidden')) {
+        await renderCalendar();
+      }
+    });
+
+    document.getElementById('prev-month').addEventListener('click', async () => {
+      calCursor.setMonth(calCursor.getMonth() - 1);
+      await renderCalendar();
+    });
+    document.getElementById('next-month').addEventListener('click', async () => {
+      calCursor.setMonth(calCursor.getMonth() + 1);
+      await renderCalendar();
+    });
+
+    function showSuccessThenClose() {
+      const dlg = document.getElementById('success-dialog');
+      dlg.classList.remove('hidden');
+      setTimeout(() => {
+        dlg.classList.add('hidden');
+        closeBooking();
+      }, 1600);
+    }
+
+    document.getElementById('booking-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!state.date || !state.time) {
+        alert('날짜/시간을 선택해 주세요.');
+        return;
+      }
+
+      const btn = document.getElementById('submit-booking');
+      if (btn.dataset.loading === '1') return;
+      btn.dataset.loading = '1';
+      const oldHtml = btn.innerHTML;
+      btn.innerHTML = '<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24"></svg><span> 저장 중…</span>';
+      btn.disabled = true;
+
+      const payload = {
+        mode: 'reserve',
+        teacher: state.teacher,
+        date: ymd(state.date),
+        time: state.time,
+        program: state.program,
+        name: document.getElementById('input-name').value.trim(),
+        grade: document.getElementById('input-grade').value,
+        phone: document.getElementById('input-phone').value.trim(),
+        notes: document.getElementById('input-notes').value.trim(),
+      };
+
+      let data = { ok: false };
+      let status = 0;
+      try {
+        const res = await fetch(API_BASE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        status = res.status;
+        const text = await res.text();
+        if (text) {
+          try {
+            data = JSON.parse(text);
+          } catch (_) {
+            data = { ok: false, error: 'PARSE_ERROR', raw: text };
+          }
+        } else if (res.ok) {
+          data = { ok: true };
+        }
+      } catch (err) {
+        console.error('fetch 실패', err);
+        alert('네트워크 오류로 예약을 저장하지 못했습니다.');
+        btn.disabled = false; btn.innerHTML = oldHtml; btn.dataset.loading = '0';
+        return;
+      }
+
+      if (!data || !data.ok) {
+        if (data && (data.error === 'CONFLICT' || status === 409)) {
+          const conflict = data.conflict || {};
+          const conflictMsg = conflict.date && conflict.time
+            ? `${conflict.date} ${conflict.time}`
+            : '해당 시간';
+          alert(`이미 ${conflictMsg}에 예약이 있습니다. 다른 시간을 선택해 주세요.`);
+          resetTimeSelection();
+          const rng = monthRangeYmd(calCursor);
+          await loadReserved(state.teacher, rng.from, rng.to);
+          if (state.date) renderSlots(state.date);
+        } else {
+          alert(`예약 저장 중 오류가 발생했습니다${status ? ` (status: ${status})` : ''}`);
+        }
+        btn.disabled = false; btn.innerHTML = oldHtml; btn.dataset.loading = '0';
+        return;
+      }
+
+      const key = ymd(state.date);
+      if (!reservedCache[key]) reservedCache[key] = [];
+      if (!reservedCache[key].includes(state.time)) reservedCache[key].push(state.time);
+      renderSlots(state.date);
+      await renderCalendar();
+      updateWeeklyRate();
+
+      try {
+        if (window.$crisp) {
+          const msg = `[예약요청]\n학생: ${payload.name} (${payload.grade})\n연락처: ${payload.phone}\n프로그램: ${payload.program}\n강사: ${payload.teacher}\n일시: ${fmtDate(state.date)} ${state.time}\n요청: ${payload.notes || '-'}`;
+          $crisp.push(["do", "message:send", ["text", msg]]);
+        }
+      } catch (_) { /* ignore */ }
+
+      showSuccessThenClose();
+      toast('예약이 저장되었습니다');
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = oldHtml;
+        btn.dataset.loading = '0';
+      }, 1800);
+    });
+
+    document.querySelectorAll('#booking-form input, #booking-form textarea, #booking-form select')
+      .forEach((el) => {
+        el.addEventListener('focus', () => {
+          setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
+        });
+      });
+
+    document.getElementById('sum-program').textContent = state.program;
+    document.getElementById('sum-teacher').textContent = state.teacher;
+    document.getElementById('summary-title').textContent = `${state.program} · ${state.teacher}`;
+    renderRangeLabel();
+
+    updateWeeklyRate();
+  </script>
+</body>
+</html>
