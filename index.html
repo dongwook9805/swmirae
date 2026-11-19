@@ -112,7 +112,7 @@
       <div class="hidden md:flex items-center gap-4">
         <div class="flex flex-col items-end mr-2">
           <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Counseling</span>
-          <span class="text-sm font-bold text-slate-700 font-eng">0507-1415-5007</span>
+          <a href="tel:050714155007" class="text-sm font-bold text-slate-700 font-eng hover:text-blue-600">0507-1415-5007</a>
         </div>
         <button
           class="open-booking bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center gap-2">
@@ -667,7 +667,7 @@
             </div>
             <div>
               <h4 class="font-bold text-white mb-6">CONTACT</h4>
-              <p class="mb-2">0507-1415-5007 (대표)</p>
+              <p class="mb-2"><a href="tel:050714155007" class="hover:text-white">0507-1415-5007</a> (대표)</p>
               <p class="mb-4 text-slate-500">055-903-5000 (학원)</p>
               <p class="text-xs text-slate-600">© 2026 SW MIRAE ACADEMY.</p>
             </div>
@@ -677,11 +677,18 @@
         <!-- Mobile Sticky Action Bar -->
         <div
           class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-100 md:hidden z-40 safe-bottom p-3">
-          <button
-            class="open-booking w-full bg-blue-600 text-white rounded-xl py-3.5 font-bold shadow-lg shadow-blue-200 flex items-center justify-center gap-2 active:scale-95 transition-transform">
-            <i data-feather="calendar" class="w-5 h-5"></i>
-            무료 상담 예약하기
-          </button>
+          <div class="flex gap-2">
+            <a href="tel:050714155007"
+              class="flex-1 bg-white border border-slate-200 text-slate-800 rounded-xl py-3.5 font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+              <i data-feather="phone" class="w-4 h-4"></i>
+              전화
+            </a>
+            <button
+              class="open-booking flex-[2.2] bg-blue-600 text-white rounded-xl py-3.5 font-bold shadow-lg shadow-blue-200 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+              <i data-feather="calendar" class="w-5 h-5"></i>
+              무료 상담 예약
+            </button>
+          </div>
         </div>
 
   </main>
