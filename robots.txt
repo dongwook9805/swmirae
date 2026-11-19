@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /old_index.html
+Disallow: /old_index_full.html
+Disallow: /references/
+
+Sitemap: https://www.swmirae.ai.kr/sitemap.xml
