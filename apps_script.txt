@@ -177,6 +177,7 @@ function doPost(e) {
     const ts = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm:ss');
     // date, time은 문자열로 박아두면 나중 비교가 더 쉬움
     sh.appendRow([ts, teacher, dateStr, timeStr, program, name, phone, grade, notes, STATUS_ACTIVE]);
+    try { _notifyNew({ ts, program, name, phone, grade, notes }); } catch (mailErr) { console.error('notify failed', mailErr); }
 
     return _json({ ok:true, reservation: { teacher, date: dateStr, time: timeStr } });
   } catch (err) {
@@ -185,3 +186,30 @@ function doPost(e) {
     try { lock.releaseLock(); } catch(_) {}
   }
 }
+
+// === 새 신청 알림 (2026-11-19 추가) ===
+// 스크립트 주인(배포한 계정)의 Gmail로 보낸다. 받는 사람을 늘리려면 NOTIFY_EXTRA에 주소 추가.
+const NOTIFY_EXTRA = [];
+function _notifyNew(r) {
+  const to = [Session.getEffectiveUser().getEmail()].concat(NOTIFY_EXTRA).filter(Boolean).join(',');
+  const subject = '[SW미래영재] 새 상담 신청 - ' + r.name + ' (' + r.grade + ') ' + r.program;
+  const body = [
+    '홈페이지로 새 신청이 들어왔어요.',
+    '',
+    '이름: ' + r.name,
+    '학년: ' + r.grade,
+    '연락처: ' + r.phone,
+    '관심 프로그램: ' + r.program,
+    '메모: ' + r.notes,
+    '신청 시각: ' + r.ts,
+    '',
+    '시트: ' + SpreadsheetApp.getActive().getUrl()
+  ].join('\n');
+  MailApp.sendEmail(to, subject, body);
+}
+
+// 편집기에서 한 번 실행 → 권한 승인 + 테스트 메일 확인용
+function testNotify() {
+  _notifyNew({ ts: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm:ss'), program: '테스트', name: '테스트', phone: '-', grade: '-', notes: '알림 테스트입니다' });
+}
+// 배포: 「swmirae booking」(ID AKfycbzN4tIb…, Cloudflare Worker TARGET) 버전 5 = 2026-11-19 알림 추가
