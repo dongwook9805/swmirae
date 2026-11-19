@@ -3,57 +3,89 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SW미래영재컴퓨터학원 온라인 게임 만들기 체험">
-  <title>게임 만들기 체험 | SW미래영재컴퓨터학원</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="ChatGPT로 만든 우주선 게임을 플레이하고, 코드를 살펴보고, 내 게임을 HTML 파일로 가져가는 SW미래영재컴퓨터학원 온라인 실습.">
+  <title>ChatGPT로 게임 만들기 | SW미래영재컴퓨터학원</title>
+  <link rel="stylesheet" href="style.css?v=starlight1">
 </head>
 <body>
   <header class="top"><div><a href="../" class="brand"><b>SW</b> 미래영재컴퓨터학원</a><a href="../#trial">학원 홈페이지</a></div></header>
   <main>
-    <div class="intro">
-      <h1>별 모으기 게임 만들기</h1>
-      <p>색과 속도, 별의 개수를 명령으로 바꾸고 내가 만든 게임을 실행해요.</p>
-    </div>
+    <header class="intro">
+      <h1>ChatGPT로 게임 만들기</h1>
+      <p>한 문장으로 시작한 아이디어가 어떻게 코드와 게임이 되는지 살펴보고, 나만의 게임 파일을 가져가요.</p>
+    </header>
+
     <section class="locked" id="gate">
       <div class="mission" aria-hidden="true"><span class="player"></span><span class="star">★</span><span class="rock"></span></div>
       <div>
-        <h2 id="gate-title">온라인 게임 만들기 체험</h2>
-        <p id="gate-text" role="status">무료 상담 신청을 마치면 체험을 시작할 수 있어요.</p>
-        <a class="button primary" id="consult" href="../?consult=game#trial">무료 상담 신청</a>
+        <h2>별빛 우체국 만들기</h2>
+        <p id="gate-text" role="status">무료 상담 신청을 마치면 ChatGPT 실습과 기록 도전이 열려요.</p>
+        <a class="button primary" href="../?consult=game#trial">무료 상담 신청</a>
         <button type="button" id="retry" hidden>다시 확인</button>
       </div>
     </section>
+
     <div class="workbench" id="workbench" hidden>
-      <section class="card guide">
-        <h2>명령을 바꿔 보세요</h2>
-        <dl id="guide"></dl>
-        <p class="hint">명령은 한 줄에 하나씩 입력해요. 예시를 누르면 편집 칸에 추가돼요.</p>
-      </section>
-      <section class="card editor">
-        <h2><label for="code">내 게임의 명령</label></h2>
-        <textarea id="code" rows="5" spellcheck="false" autocomplete="off"></textarea>
-        <div class="actions">
-          <button type="button" class="primary" id="run">게임 실행</button>
-          <button type="button" id="reset">예시 명령 복원</button>
-        </div>
-        <p id="code-status" class="hint" role="status"></p>
-      </section>
-      <section class="card screen">
-        <div class="screen-title"><h2>실행 화면</h2><output id="score"></output></div>
-        <div class="board">
-          <canvas id="board" width="640" height="360" tabindex="0" aria-label="별 모으기 게임. 방향키나 아래 이동 버튼으로 조작."></canvas>
-        </div>
-        <p id="play-status" class="hint" role="status">명령을 바꾸고 게임 실행을 눌러 보세요.</p>
-        <div class="pad" aria-label="캐릭터 이동">
-          <button type="button" data-move="ArrowLeft" aria-label="왼쪽">←</button>
-          <button type="button" data-move="ArrowUp" aria-label="위">↑</button>
-          <button type="button" data-move="ArrowDown" aria-label="아래">↓</button>
-          <button type="button" data-move="ArrowRight" aria-label="오른쪽">→</button>
-        </div>
-      </section>
+      <div class="play-column">
+        <section class="card screen">
+          <div class="screen-title"><h2>별빛 우체국</h2><div class="actions">
+            <button type="button" id="show-example" aria-pressed="true">예제 플레이</button>
+            <button type="button" id="challenge" aria-pressed="false">30초 기록 도전</button>
+          </div></div>
+          <div id="frame-host" class="game-frame"></div>
+          <p id="play-mode" class="hint">편지를 받아 점수를 모으고 운석을 피해 보세요.</p>
+        </section>
+        <section class="card records">
+          <h2>내 기록 순위</h2>
+          <p class="hint">같은 30초 규칙으로 도전한 기록을 이 브라우저에 최대 5개 저장해요.</p>
+          <ol id="records-list"></ol>
+          <p id="record-status" role="status" class="hint"></p>
+        </section>
+      </div>
+
+      <div class="learn-column">
+        <section class="card">
+          <h2>ChatGPT에 이렇게 부탁했어요</h2>
+          <blockquote>“우주선을 좌우 방향키나 화면의 두 버튼으로 움직여, 하늘에서 떨어지는 편지를 받으면 +10점, 황금 편지는 +30점, 운석에 부딪히면 -15점이 되게 해 줘.”</blockquote>
+          <details><summary>게임을 만들 때 사용한 프롬프트 전체 보기</summary><pre id="original-prompt"></pre></details>
+          <p class="hint">하고 싶은 동작, 점수를 얻는 조건, 게임이 끝나는 조건까지 알려주면 ChatGPT가 코드를 짜기 쉬워요.</p>
+        </section>
+
+        <section class="card">
+          <h2>내 게임의 규칙 바꾸기</h2>
+          <form id="settings-form">
+            <div class="fields">
+              <label>게임 제목<input id="game-title" name="title" type="text" maxlength="32" required></label>
+              <label>우주선 색<select name="spacecraftColor"><option value="#60a5fa">하늘색</option><option value="#34d399">민트색</option><option value="#f472b6">분홍색</option><option value="#facc15">노란색</option></select></label>
+              <label>제한 시간<select name="seconds"><option value="20">20초</option><option value="30">30초</option><option value="45">45초</option></select></label>
+              <label>운석 수<select name="meteorRate"><option value="0.1">적게</option><option value="0.25">보통</option><option value="0.4">많게</option></select></label>
+            </div>
+            <div class="actions">
+              <button class="primary" type="submit">내 설정으로 실행</button>
+              <button type="button" id="reset-settings">예제 값으로 복원</button>
+            </div>
+          </form>
+          <p id="code-status" aria-live="polite" class="hint"></p>
+          <details open>
+            <summary>바뀌는 코드</summary>
+            <pre><code id="config-code"></code></pre>
+            <p class="hint"><code>seconds</code>는 남은 시간, <code>meteorRate</code>는 운석이 나타날 비율을 정해요. 한 번에 하나씩 바꾸고 결과를 비교해 보세요.</p>
+          </details>
+          <details>
+            <summary>현재 설정의 HTML 전체 보기</summary>
+            <pre id="full-code"></pre>
+          </details>
+          <div class="actions export">
+            <button type="button" id="download">내 게임 HTML 받기</button>
+            <button type="button" id="copy-prompt">ChatGPT에 보낼 수정 요청 복사</button>
+          </div>
+          <output id="prompt-status" class="hint" aria-live="polite"></output>
+        </section>
+      </div>
     </div>
   </main>
   <script src="../booking-api.js"></script>
-  <script src="game.js"></script>
+  <script src="example.js?v=starlight1"></script>
+  <script src="game.js?v=starlight1"></script>
 </body>
 </html>

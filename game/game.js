@@ -1,5 +1,7 @@
 'use strict';
-const storageKey = 'swmirae.game.access';
+
+const accessKey = 'swmirae.game.access';
+const recordsKey = 'swmirae.game.starlight-records';
 const gate = document.querySelector('#gate');
 const gateText = document.querySelector('#gate-text');
 const retry = document.querySelector('#retry');
@@ -8,7 +10,7 @@ if (sharedAccess) history.replaceState(null, '', location.pathname + location.se
 
 async function openLesson() {
   let token = sharedAccess;
-  try { token ||= localStorage.getItem(storageKey); } catch (_) {}
+  try { token ||= localStorage.getItem(accessKey); } catch (_) {}
   if (!token) return;
   gateText.textContent = '상담 신청을 확인하고 있어요.';
   retry.hidden = true;
@@ -17,214 +19,171 @@ async function openLesson() {
     const result = await response.json();
     if (result.error === 'GAME_ACCESS_REQUIRED') {
       try {
-        if (localStorage.getItem(storageKey) === token) localStorage.removeItem(storageKey);
+        if (localStorage.getItem(accessKey) === token) localStorage.removeItem(accessKey);
       } catch (_) {}
       gateText.textContent = '체험 기간이 지났거나 신청을 확인할 수 없어요. 학원에 문의하거나 무료 상담을 신청해 주세요.';
       return;
     }
-    if (!response.ok || !result.ok || !result.lesson) throw new Error('Lesson unavailable');
-    try { localStorage.setItem(storageKey, token); } catch (_) {}
-    initGame(result.lesson);
+    if (!response.ok || !result.ok) throw new Error('Lesson unavailable');
+    initLesson(window.starlightLesson);
+    try { localStorage.setItem(accessKey, token); } catch (_) {}
     gate.hidden = true;
     document.querySelector('#workbench').hidden = false;
   } catch (_) {
-    gateText.textContent = '지금은 상담 신청을 확인하기 어려워요. 잠시 후 다시 확인해 주세요.';
+    gateText.textContent = '지금은 온라인 실습을 여는 데 문제가 있어요. 잠시 후 다시 확인해 주세요.';
     retry.hidden = false;
   }
 }
 
-function initGame(lesson) {
-  const guide = document.querySelector('#guide');
-  const input = document.querySelector('#code');
-  const canvas = document.querySelector('#board');
-  const ctx = canvas.getContext('2d');
-  const score = document.querySelector('#score');
+function initLesson(example) {
+  const form = document.querySelector('#settings-form');
+  const frameHost = document.querySelector('#frame-host');
+  const code = document.querySelector('#config-code');
+  const fullCode = document.querySelector('#full-code');
+  const settingsPattern = /\/\* LESSON_SETTINGS_START \*\/\s*({[^\n]+})\s*\/\* LESSON_SETTINGS_END \*\//;
+  const match = example.html.match(settingsPattern);
+  if (!match) throw new Error('Lesson settings unavailable');
+  const original = JSON.parse(match[1]);
+  const challengeButton = document.querySelector('#challenge');
+  const exampleButton = document.querySelector('#show-example');
   const codeStatus = document.querySelector('#code-status');
-  const playStatus = document.querySelector('#play-status');
-  const moves = new Set();
-  const keys = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
-  const rules = new Map(lesson.commands.map(command => [command.name, command]));
-  const colors = {파랑: '#60a5fa', 노랑: '#facc15', 초록: '#34d399', 분홍: '#f472b6'};
-  let world = null;
-  let animation = 0;
-  let lastTime = 0;
+  const recordStatus = document.querySelector('#record-status');
+  const promptStatus = document.querySelector('#prompt-status');
+  let savedSettings = {...original};
+  let currentFrame = null;
+  let challengeMode = false;
 
-  function restore() {
-    input.value = lesson.starter;
-    codeStatus.textContent = '';
-    codeStatus.dataset.error = 'false';
+  function source(settings) {
+    // HTML 템플릿 안의 스크립트에서 제목 입력을 항상 문자열 값으로만 처리한다.
+    const json = JSON.stringify(settings).replace(/[<>&\u2028\u2029]/g, ch =>
+      '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0'));
+    return example.html.replace(settingsPattern, () => '/* LESSON_SETTINGS_START */ ' + json + ' /* LESSON_SETTINGS_END */');
   }
 
-  for (const {name, example, help} of lesson.commands) {
-    const row = document.createElement('div');
-    const term = document.createElement('dt');
-    const detail = document.createElement('dd');
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.textContent = example;
-    button.setAttribute('aria-label', example + ' 예시 넣기');
-    button.addEventListener('click', () => {
-      const line = new RegExp('^[ \\t]*' + name + '(?:[ \\t]+[^\\n]*)?$', 'm');
-      const next = input.value.trimEnd();
-      input.value = line.test(next) ? next.replace(line, example) : [next, example].filter(Boolean).join('\n');
-      input.focus();
-      codeStatus.textContent = '예시를 넣었어요. 숫자나 색을 바꿔서 실행해 보세요.';
-      codeStatus.dataset.error = 'false';
-    });
-    term.append(button);
-    detail.textContent = help;
-    row.append(term, detail);
-    guide.append(row);
+  function preview(settings, mode) {
+    challengeMode = settings.challenge;
+    challengeButton.setAttribute('aria-pressed', String(mode === 'challenge'));
+    exampleButton.setAttribute('aria-pressed', String(mode === 'example'));
+    const frame = document.createElement('iframe');
+    frame.title = settings.title + ' 게임 화면';
+    frame.setAttribute('sandbox', 'allow-scripts');
+    frame.srcdoc = source(settings);
+    currentFrame = frame;
+    frameHost.replaceChildren(frame);
+    document.querySelector('#play-mode').textContent = {
+      example: '편지를 받아 점수를 모으고 운석을 피해 보세요.',
+      custom: '내가 바꾼 설정이 적용됐어요. 게임 파일로 가져갈 수 있어요.',
+      challenge: '모두 같은 30초 규칙으로 플레이해요. 한 판을 끝내면 내 순위에 올라가요.',
+    }[mode];
   }
 
-  function parse() {
-    const result = Object.create(null);
-    for (const [i, raw] of input.value.split('\n').entries()) {
-      if (!raw.trim()) continue;
-      const [name, value, extra] = raw.trim().split(/\s+/);
-      const rule = rules.get(name);
-      const prefix = (i + 1) + '번째 줄을 확인해 주세요. ';
-      if (!rule || !value || extra) throw Error(prefix + '예시처럼 명령과 값을 띄어 써요.');
-      if (Object.hasOwn(result, name)) throw Error(prefix + name + ' 명령은 한 번만 써요.');
-      if (rule.values) {
-        if (!rule.values.includes(value)) throw Error(prefix + rule.help);
-        result[name] = value;
-      } else {
-        const number = Number(value);
-        if (!/^\d+$/.test(value) || number < rule.min || number > rule.max) throw Error(prefix + rule.help);
-        result[name] = number;
-      }
-    }
-    for (const name of rules.keys()) {
-      if (!Object.hasOwn(result, name)) throw Error(name + ' 명령을 한 줄 추가해 주세요.');
-    }
-    return result;
+  function renderCode() {
+    code.textContent = 'const CONFIG = ' + JSON.stringify(savedSettings, null, 2) + ';';
+    fullCode.textContent = source(savedSettings);
   }
 
-  function rounded(x, y, w, h, r, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h, r);
-    ctx.fill();
+  function fillForm(settings) {
+    for (const key of ['title', 'spacecraftColor', 'seconds', 'meteorRate']) {
+      form.elements.namedItem(key).value = settings[key];
+    }
   }
 
-  function draw() {
-    ctx.fillStyle = '#101c34';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#304366';
-    for (let y = 16; y < canvas.height; y += 24) {
-      for (let x = 16; x < canvas.width; x += 24) ctx.fillRect(x, y, 2, 2);
-    }
-    if (!world) return;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.font = '31px sans-serif';
-    ctx.fillStyle = '#ffc93c';
-    for (const star of world.stars) {
-      if (!star.collected) ctx.fillText('★', star.x, star.y + 1);
-    }
-    for (const rock of world.rocks) {
-      rounded(rock.x - 14, rock.y - 14, 28, 28, 8, '#7e8da5');
-      rounded(rock.x - 9, rock.y - 9, 10, 5, 2, '#aebbd0');
-    }
-    const {x, y} = world.player;
-    rounded(x - 14, y - 14, 28, 28, 8, world.color);
-    rounded(x - 7, y - 4, 4, 5, 1, '#101c34');
-    rounded(x + 3, y - 4, 4, 5, 1, '#101c34');
+  function getRecords() {
+    try {
+      const decoded = JSON.parse(localStorage.getItem(recordsKey) || '[]');
+      if (Array.isArray(decoded)) return decoded.filter(score => Number.isInteger(score) && score >= 0 && score <= 10000).slice(0, 5);
+    } catch (_) {}
+    return [];
   }
 
-  function intersects(point, radius) {
-    const {x, y} = world.player;
-    return Math.hypot(point.x - x, point.y - y) < radius;
+  function showRecords(scores) {
+    const list = document.querySelector('#records-list');
+    list.replaceChildren();
+    for (const [index, score] of scores.entries()) {
+      const row = document.createElement('li');
+      const rank = document.createElement('span');
+      const points = document.createElement('strong');
+      rank.textContent = (index + 1) + '위';
+      points.textContent = score + '점';
+      row.append(rank, points);
+      list.append(row);
+    }
   }
 
-  function tick(timestamp) {
-    if (!world?.playing) return;
-    const dt = Math.min(.035, (timestamp - (lastTime || timestamp)) / 1000);
-    lastTime = timestamp;
-    const dx = Number(moves.has('ArrowRight')) - Number(moves.has('ArrowLeft'));
-    const dy = Number(moves.has('ArrowDown')) - Number(moves.has('ArrowUp'));
-    const velocity = world.speed * dt / (Math.hypot(dx, dy) || 1);
-    world.player.x = Math.max(15, Math.min(canvas.width - 15, world.player.x + velocity * dx));
-    world.player.y = Math.max(15, Math.min(canvas.height - 15, world.player.y + velocity * dy));
+  window.addEventListener('message', event => {
+    const result = event.data;
+    if (!challengeMode || event.source !== currentFrame?.contentWindow || event.origin !== 'null' ||
+        result?.type !== 'swmirae:round' || result.challenge !== true ||
+        !Number.isInteger(result.score) || result.score < 0 || result.score > 10000) return;
+    const previous = getRecords();
+    const position = 1 + previous.filter(score => score >= result.score).length;
+    const next = [...previous, result.score].sort((a, b) => b - a).slice(0, 5);
+    try {
+      localStorage.setItem(recordsKey, JSON.stringify(next));
+      recordStatus.textContent = position <= 5 ? result.score + '점으로 내 기록 ' + position + '위!' : result.score + '점이에요. 한 판 더 도전해 볼까요?';
+    } catch (_) {
+      recordStatus.textContent = result.score + '점이에요. 이 브라우저에서 기록을 저장할 수 없어요.';
+    }
+    showRecords(next);
+  });
 
-    if (world.rocks.some(rock => intersects(rock, 25))) {
-      world.player = {...lesson.start};
-      playStatus.textContent = '장애물에 닿았어요. 모은 별은 그대로 두고 출발점으로 돌아왔어요.';
-    }
-    for (const star of world.stars) {
-      if (star.collected || !intersects(star, 28)) continue;
-      star.collected = true;
-      world.count += 1;
-      score.textContent = world.count + ' / ' + world.stars.length + ' 별';
-      playStatus.textContent = '별을 모았어요!';
-    }
-    if (world.count === world.stars.length) {
-      world.playing = false;
-      moves.clear();
-      playStatus.textContent = '성공! 별을 모두 모았어요. 명령을 바꾸면 새 게임이 돼요.';
-    }
-    draw();
-    if (world.playing) animation = requestAnimationFrame(tick);
-  }
-
-  function start() {
-    let values;
-    try { values = parse(); } catch (error) {
-      codeStatus.textContent = error.message;
-      codeStatus.dataset.error = 'true';
-      input.focus();
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const fields = new FormData(form);
+    const title = String(fields.get('title')).trim();
+    const seconds = Number(fields.get('seconds'));
+    const meteorRate = Number(fields.get('meteorRate'));
+    const spacecraftColor = String(fields.get('spacecraftColor'));
+    if (!title || title.length > 32 || ![20, 30, 45].includes(seconds) ||
+        ![0.1, 0.25, 0.4].includes(meteorRate) || !['#60a5fa', '#34d399', '#f472b6', '#facc15'].includes(spacecraftColor)) {
+      codeStatus.textContent = '게임 제목과 설정을 확인해 주세요.';
       return;
     }
-    cancelAnimationFrame(animation);
-    moves.clear();
-    world = {
-      player: {...lesson.start},
-      color: colors[values.색상],
-      speed: 45 + values.속도 * 24,
-      stars: lesson.stars.slice(0, values.별).map(star => ({...star, collected: false})),
-      rocks: lesson.rocks.slice(0, values.장애물),
-      count: 0,
-      playing: true
-    };
-    score.textContent = '0 / ' + world.stars.length + ' 별';
-    codeStatus.textContent = '명령을 게임에 적용했어요.';
-    codeStatus.dataset.error = 'false';
-    playStatus.textContent = '방향키나 아래 버튼으로 움직여 별을 모으세요.';
-    lastTime = 0;
-    draw();
-    if (matchMedia('(max-width: 720px)').matches) canvas.scrollIntoView({block: 'nearest'});
-    canvas.focus({preventScroll: true});
-    animation = requestAnimationFrame(tick);
-  }
-
-  canvas.addEventListener('keydown', event => {
-    if (!world?.playing || !keys.has(event.key)) return;
-    event.preventDefault();
-    moves.add(event.key);
+    savedSettings = {title, spacecraftColor, seconds, meteorRate, challenge: false};
+    renderCode();
+    preview(savedSettings, 'custom');
+    codeStatus.textContent = '내 설정을 코드에 반영했어요.';
+    if (matchMedia('(max-width: 780px)').matches) frameHost.scrollIntoView({block: 'start'});
   });
-  canvas.addEventListener('keyup', event => moves.delete(event.key));
-  canvas.addEventListener('blur', () => moves.clear());
-  window.addEventListener('blur', () => moves.clear());
-  for (const button of document.querySelectorAll('[data-move]')) {
-    const key = button.dataset.move;
-    button.addEventListener('pointerdown', event => {
-      button.setPointerCapture(event.pointerId);
-      moves.add(key);
-    });
-    button.addEventListener('lostpointercapture', () => moves.delete(key));
-    button.addEventListener('keydown', event => {
-      if (event.key !== ' ' && event.key !== 'Enter') return;
-      event.preventDefault();
-      moves.add(key);
-    });
-    button.addEventListener('keyup', () => moves.delete(key));
-    button.addEventListener('blur', () => moves.delete(key));
-  }
-  document.querySelector('#run').addEventListener('click', start);
-  document.querySelector('#reset').addEventListener('click', restore);
-  restore();
-  draw();
+
+  document.querySelector('#reset-settings').addEventListener('click', () => {
+    savedSettings = {...original};
+    fillForm(savedSettings);
+    renderCode();
+    preview(original, 'example');
+    codeStatus.textContent = '원래 예제 설정으로 되돌렸어요.';
+  });
+  exampleButton.addEventListener('click', () => preview(original, 'example'));
+  challengeButton.addEventListener('click', () => preview({...original, challenge: true}, 'challenge'));
+
+  document.querySelector('#download').addEventListener('click', () => {
+    const file = new Blob([source(savedSettings)], {type: 'text/html;charset=utf-8'});
+    const url = URL.createObjectURL(file);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'my-starlight-game.html';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    promptStatus.textContent = '받은 HTML 파일을 브라우저에서 열면 내 게임이 실행돼요.';
+  });
+  document.querySelector('#copy-prompt').addEventListener('click', async () => {
+    const prompt = '아래 HTML 게임에서 황금 편지를 연속으로 2개 받으면 보너스 20점을 주는 기능을 추가해 줘. ' +
+      '기존의 조작과 시간 설정은 유지하고, 바뀐 코드가 무슨 일을 하는지도 설명해 줘.';
+    try {
+      await navigator.clipboard.writeText(prompt + '\n\n현재 HTML 코드\n' + source(savedSettings));
+      promptStatus.textContent = '수정 요청을 복사했어요.';
+    } catch (_) {
+      promptStatus.textContent = prompt + ' 이 문장과 다운로드한 HTML 파일을 함께 보내 보세요.';
+    }
+  });
+
+  document.querySelector('#original-prompt').textContent = example.prompt;
+  fillForm(savedSettings);
+  renderCode();
+  const records = getRecords();
+  showRecords(records);
+  if (!records.length) recordStatus.textContent = '아직 도전 기록이 없어요.';
+  preview(original, 'example');
 }
 
 retry.addEventListener('click', openLesson);
