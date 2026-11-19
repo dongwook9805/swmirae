@@ -73,62 +73,74 @@
   <!-- Resources -->
   <link rel="icon" type="image/png" href="/images/Gemini_Generated_Image_5q7wm5q7wm5q7wm5.png" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { brand: { blue: '#2563EB', sky: '#3B82F6', yellow: '#FFC93C', sun: '#F5A400', ink: '#0B1220', paper: '#FAFAF7' } },
+      fontFamily: { sans: ['Pretendard Variable', 'Pretendard', 'Noto Sans KR', 'sans-serif'], mono: ['JetBrains Mono', 'ui-monospace', 'monospace'] }
+    } } };
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.1/dist/feather.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
     :root { --sab: env(safe-area-inset-bottom, 0px); }
     html { scroll-padding-top: 76px; }
-    body { font-family: 'Noto Sans KR', sans-serif; background:#fff; color:#1E293B; -webkit-font-smoothing: antialiased; word-break: keep-all; }
-    .font-eng { font-family: 'Inter', sans-serif; }
-    .glass-nav { background: rgba(255,255,255,.88); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(15,23,42,.06); }
+    body { background:#FAFAF7; color:#0B1220; -webkit-font-smoothing: antialiased; word-break: keep-all; letter-spacing: -0.01em; }
     .safe-bottom { padding-bottom: calc(12px + var(--sab)); }
-    .hide-scroll::-webkit-scrollbar { display:none; } .hide-scroll { scrollbar-width:none; }
+    .glass { background: rgba(250,250,247,.82); backdrop-filter: blur(14px); }
+    .hl { background: linear-gradient(transparent 58%, #FFC93C 58%, #FFC93C 92%, transparent 92%); padding: 0 .08em; }
+    .grid-bg { background-image: linear-gradient(rgba(11,18,32,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(11,18,32,.05) 1px, transparent 1px); background-size: 28px 28px; }
     details > summary { list-style: none; cursor: pointer; } details > summary::-webkit-details-marker { display:none; }
     details[open] .faq-icon { transform: rotate(45deg); }
-    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
     .reveal.in { opacity: 1; transform: none; }
-    @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } }
+    .marquee { display:flex; width:max-content; animation: marquee 28s linear infinite; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+    .caret::after { content:'▍'; color:#FFC93C; animation: blink 1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .lift { transition: transform .25s ease, box-shadow .25s ease; } .lift:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -18px rgba(11,18,32,.25); }
+    .hide-scroll::-webkit-scrollbar { display:none; } .hide-scroll { scrollbar-width:none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } .marquee { animation:none; } .caret::after { animation:none; } }
   </style>
 </head>
 
-<body class="flex flex-col min-h-screen pb-[84px] md:pb-0">
+<body class="font-sans flex flex-col min-h-screen pb-[84px] md:pb-0">
 
   <!-- 상단 메뉴 -->
-  <header class="fixed top-0 inset-x-0 z-50 glass-nav">
+  <header class="fixed top-0 inset-x-0 z-50 glass border-b border-black/5">
     <div class="max-w-6xl mx-auto px-4 md:px-6 h-16 md:h-[72px] flex items-center justify-between gap-4">
       <a href="#top" class="flex items-center gap-2.5 shrink-0">
-        <img src="images/Gemini_Generated_Image_5q7wm5q7wm5q7wm5.png" alt="SW미래영재컴퓨터학원 로고" class="w-10 h-10 rounded-full border border-slate-100 object-cover">
+        <img src="images/Gemini_Generated_Image_5q7wm5q7wm5q7wm5.png" alt="SW미래영재컴퓨터학원 로고" class="w-10 h-10 rounded-full bg-white ring-1 ring-black/5 object-cover">
         <span class="leading-tight">
-          <span class="block font-extrabold text-slate-900 text-[15px]">SW미래영재컴퓨터학원</span>
+          <span class="block font-extrabold text-[15px] tracking-tight"><span class="text-brand-blue">S</span><span class="text-brand-sun">W</span>미래영재컴퓨터학원</span>
           <span class="block text-[11px] text-slate-500">김해 율하동 코딩 · 컴퓨터</span>
         </span>
       </a>
-      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
-        <a href="#trial" class="hover:text-blue-600">무료 체험</a>
-        <a href="#winter" class="text-amber-600 font-bold hover:text-amber-700">겨울특강</a>
-        <a href="#courses" class="hover:text-blue-600">수업 과정</a>
-        <a href="#teachers" class="hover:text-blue-600">선생님</a>
-        <a href="#faq" class="hover:text-blue-600">자주 묻는 질문</a>
-        <a href="#location" class="hover:text-blue-600">오시는 길</a>
+      <nav class="hidden md:flex items-center gap-7 text-[15px] font-semibold text-slate-600">
+        <a href="#trial" class="hover:text-brand-ink">무료 체험</a>
+        <a href="#winter" class="hover:text-brand-ink">겨울특강</a>
+        <a href="#courses" class="hover:text-brand-ink">수업 과정</a>
+        <a href="#teachers" class="hover:text-brand-ink">선생님</a>
+        <a href="#faq" class="hover:text-brand-ink">FAQ</a>
+        <a href="#location" class="hover:text-brand-ink">오시는 길</a>
       </nav>
       <div class="hidden md:flex items-center gap-2">
-        <a href="tel:050714155007" class="text-sm font-bold text-slate-700 px-3 py-2 hover:text-blue-600 font-eng">0507-1415-5007</a>
-        <a href="https://pf.kakao.com/_agqvX/chat" target="_blank" rel="noopener" class="bg-[#FEE500] text-[#191919] px-4 py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 hover:brightness-95"><i data-feather="message-circle" class="w-4 h-4"></i>카톡 상담</a>
-        <button data-program="무료 체험 수업" class="open-booking bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md shadow-blue-200">무료 체험 신청</button>
+        <a href="https://pf.kakao.com/_agqvX/chat" target="_blank" rel="noopener" class="bg-[#FEE500] text-[#191919] px-4 py-2.5 rounded-full text-sm font-bold flex items-center gap-1.5 hover:brightness-95"><i data-feather="message-circle" class="w-4 h-4"></i>카톡</a>
+        <button data-program="무료 체험 수업" class="open-booking bg-brand-ink hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-bold">무료 체험 신청</button>
       </div>
-      <button id="menu-btn" class="md:hidden p-2 -mr-2 text-slate-700" aria-label="메뉴 열기" aria-expanded="false"><i data-feather="menu"></i></button>
+      <button id="menu-btn" class="md:hidden p-2 -mr-2" aria-label="메뉴 열기" aria-expanded="false"><i data-feather="menu"></i></button>
     </div>
-    <div id="mobile-menu" class="md:hidden hidden border-t border-slate-100 bg-white">
-      <nav class="px-4 py-2 grid text-[15px] font-medium text-slate-700">
-        <a href="#trial" class="py-3 border-b border-slate-50">무료 체험 수업</a>
-        <a href="#winter" class="py-3 border-b border-slate-50 text-amber-600 font-bold">2027 겨울방학 특강</a>
-        <a href="#courses" class="py-3 border-b border-slate-50">수업 과정 · 자격증</a>
-        <a href="#teachers" class="py-3 border-b border-slate-50">선생님 소개</a>
-        <a href="#faq" class="py-3 border-b border-slate-50">자주 묻는 질문</a>
-        <a href="#location" class="py-3">오시는 길</a>
+    <div id="mobile-menu" class="md:hidden hidden border-t border-black/5 bg-brand-paper">
+      <nav class="px-4 py-2 grid text-[16px] font-semibold">
+        <a href="#trial" class="py-3.5 border-b border-black/5">무료 체험 수업</a>
+        <a href="#winter" class="py-3.5 border-b border-black/5">2027 겨울방학 특강</a>
+        <a href="#courses" class="py-3.5 border-b border-black/5">수업 과정 · 자격증</a>
+        <a href="#teachers" class="py-3.5 border-b border-black/5">선생님 소개</a>
+        <a href="#faq" class="py-3.5 border-b border-black/5">자주 묻는 질문</a>
+        <a href="#location" class="py-3.5">오시는 길</a>
       </nav>
     </div>
   </header>
@@ -136,269 +148,296 @@
   <main id="top" class="flex-1 pt-16 md:pt-[72px]">
 
     <!-- 1. 첫 화면 -->
-    <section class="relative overflow-hidden bg-gradient-to-b from-blue-50/70 to-white">
-      <div class="max-w-6xl mx-auto px-4 md:px-6 pt-10 pb-14 md:pt-20 md:pb-24 grid md:grid-cols-2 gap-10 md:gap-14 items-center">
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 grid-bg [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"></div>
+      <div class="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full bg-brand-yellow/30 blur-3xl"></div>
+      <div class="absolute top-40 -left-32 w-[360px] h-[360px] rounded-full bg-brand-sky/20 blur-3xl"></div>
+      <div class="relative max-w-6xl mx-auto px-4 md:px-6 pt-10 pb-16 md:pt-20 md:pb-24 grid lg:grid-cols-[1.05fr_1fr] gap-12 items-center">
         <div>
-          <div class="inline-flex items-center gap-2 bg-white border border-blue-100 text-blue-700 text-xs md:text-sm font-bold px-3 py-1.5 rounded-full shadow-sm">
-            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>2027 겨울방학 특강 모집 중
+          <div class="inline-flex items-center gap-2 bg-white ring-1 ring-black/5 text-[13px] font-bold px-3 py-1.5 rounded-full shadow-sm">
+            <span class="relative flex w-2 h-2"><span class="absolute inline-flex w-full h-full rounded-full bg-brand-sun opacity-60 animate-ping"></span><span class="relative inline-flex w-2 h-2 rounded-full bg-brand-sun"></span></span>
+            2027 겨울방학 특강 모집 중
           </div>
-          <h1 class="mt-5 text-[34px] leading-[1.25] md:text-[52px] md:leading-[1.15] font-extrabold text-slate-900 tracking-tight">
-            율하동 코딩학원,<br><span class="text-blue-600">직접 만들면서</span> 배워요
+          <p class="mt-6 text-brand-blue font-bold">율하동 코딩학원</p>
+          <h1 class="mt-2 text-[40px] leading-[1.15] md:text-[64px] md:leading-[1.08] font-extrabold tracking-[-0.035em]">
+            내 아이가<br><span class="hl">직접 만드는</span> 코딩
           </h1>
-          <p class="mt-5 text-base md:text-lg text-slate-600 leading-relaxed">
-            엔트리·스크래치부터 파이썬·AI, ITQ·DIAT 자격증까지.<br class="hidden md:block">
-            아이 수준을 먼저 보고, 비슷한 친구들끼리 소수 그룹으로 수업합니다.
+          <p class="mt-6 text-[17px] md:text-lg text-slate-600 leading-relaxed max-w-xl">
+            엔트리·스크래치부터 파이썬·AI, ITQ·DIAT 자격증까지. 아이 수준을 먼저 보고, 비슷한 친구들끼리 소수 그룹으로 수업합니다.
           </p>
-          <div class="mt-7 flex flex-col sm:flex-row gap-3">
-            <button data-program="무료 체험 수업" class="open-booking bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-7 py-4 font-bold shadow-xl shadow-slate-200 flex flex-col items-center">
-              <span class="flex items-center gap-2">무료 체험 수업 신청 <i data-feather="arrow-right" class="w-4 h-4"></i></span>
-              <span class="text-xs font-medium text-slate-300 mt-0.5">다른 학원 다녀도 OK</span>
+          <div class="mt-8 flex flex-col sm:flex-row gap-3">
+            <button data-program="무료 체험 수업" class="open-booking group bg-brand-blue hover:bg-blue-700 text-white rounded-2xl pl-6 pr-5 py-4 font-bold shadow-[0_14px_30px_-12px_rgba(37,99,235,.7)] flex items-center justify-between gap-6">
+              <span class="text-left leading-tight">무료 체험 수업 신청<span class="block text-[12px] font-medium text-blue-100 mt-0.5">다른 학원 다녀도 OK</span></span>
+              <span class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center group-hover:translate-x-1 transition"><i data-feather="arrow-right" class="w-4 h-4"></i></span>
             </button>
-            <a href="https://pf.kakao.com/_agqvX/chat" target="_blank" rel="noopener" class="bg-[#FEE500] text-[#191919] rounded-xl px-7 py-4 font-bold flex items-center justify-center gap-2 hover:brightness-95">
-              <i data-feather="message-circle" class="w-5 h-5"></i>카톡으로 물어보기
+            <a href="https://pf.kakao.com/_agqvX/chat" target="_blank" rel="noopener" class="bg-white ring-1 ring-black/10 hover:ring-black/20 rounded-2xl px-6 py-4 font-bold flex items-center justify-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-[#FEE500] flex items-center justify-center"><i data-feather="message-circle" class="w-3.5 h-3.5"></i></span>카톡으로 물어보기
             </a>
           </div>
-          <ul class="mt-8 grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm text-slate-700">
-            <li class="flex items-center gap-2"><i data-feather="award" class="w-4 h-4 text-amber-500"></i>원장 직강 20년+ 경력</li>
-            <li class="flex items-center gap-2"><i data-feather="cpu" class="w-4 h-4 text-blue-500"></i>KAIST 출신 담당 강사</li>
-            <li class="flex items-center gap-2"><i data-feather="users" class="w-4 h-4 text-blue-500"></i>소수정예 · 1:1 맞춤</li>
-            <li class="flex items-center gap-2"><i data-feather="zap" class="w-4 h-4 text-amber-500"></i>AI 튜터 활용 수업</li>
-          </ul>
         </div>
-        <div class="relative">
-          <img src="images/classroom.jpg" alt="율하 코딩학원 SW미래영재 교실" class="w-full aspect-[4/3] object-cover rounded-3xl shadow-2xl shadow-slate-300/50">
-          <div class="absolute -bottom-5 left-4 md:-left-6 bg-white rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center"><i data-feather="map-pin" class="w-5 h-5"></i></div>
-            <div class="text-sm leading-tight"><b class="text-slate-900">율하1로 102 경보코아 203호</b><br><span class="text-slate-500">평일 13:00–20:00 · Since 2022</span></div>
+
+        <!-- 코드 → 게임 데모 -->
+        <div class="relative" aria-hidden="true">
+          <div class="absolute -inset-4 bg-gradient-to-br from-brand-blue/20 to-brand-yellow/30 rounded-[36px] blur-2xl"></div>
+          <div class="relative rounded-[28px] bg-brand-ink text-white shadow-2xl ring-1 ring-white/10 overflow-hidden">
+            <div class="flex items-center gap-1.5 px-4 py-3 border-b border-white/10">
+              <span class="w-3 h-3 rounded-full bg-[#FF5F57]"></span><span class="w-3 h-3 rounded-full bg-[#FEBC2E]"></span><span class="w-3 h-3 rounded-full bg-[#28C840]"></span>
+              <span class="ml-3 text-xs text-white/50 font-mono">my_game.py</span>
+            </div>
+            <pre id="code" class="font-mono text-[12.5px] md:text-sm leading-6 px-5 pt-4 pb-3 h-[220px] text-white/90 whitespace-pre overflow-hidden"></pre>
+            <div class="px-4 pb-4">
+              <div class="relative rounded-2xl bg-[#111a2e] ring-1 ring-white/10 overflow-hidden">
+                <div class="absolute top-2 left-3 text-[11px] font-mono text-white/50">▶ 실행 화면</div>
+                <div id="score" class="absolute top-2 right-3 text-[11px] font-mono text-brand-yellow">점수 0</div>
+                <canvas id="game" width="520" height="150" class="w-full h-[130px] md:h-[150px] block"></canvas>
+              </div>
+            </div>
           </div>
+          <div class="absolute -top-5 right-3 md:-right-6 bg-white text-brand-ink rounded-2xl shadow-xl ring-1 ring-black/5 px-4 py-3 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brand-yellow flex items-center justify-center"><i data-feather="zap" class="w-5 h-5"></i></div>
+            <div class="text-sm leading-tight"><b>첫 수업에 게임 완성</b><br><span class="text-slate-500">2시간 무료 체험</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 숫자 띠 -->
+      <div class="relative max-w-6xl mx-auto px-4 md:px-6 pb-14">
+        <div class="grid grid-cols-2 md:grid-cols-4 rounded-3xl bg-white ring-1 ring-black/5 shadow-sm divide-x divide-y md:divide-y-0 divide-black/5 overflow-hidden">
+          <div class="p-5 md:p-6"><div class="text-3xl md:text-4xl font-extrabold tracking-tight">20<span class="text-brand-sun">+</span><span class="text-lg">년</span></div><div class="mt-1 text-sm text-slate-500">원장 직강 경력</div></div>
+          <div class="p-5 md:p-6"><div class="text-3xl md:text-4xl font-extrabold tracking-tight text-brand-blue">KAIST</div><div class="mt-1 text-sm text-slate-500">출신 코딩·AI 강사</div></div>
+          <div class="p-5 md:p-6"><div class="text-3xl md:text-4xl font-extrabold tracking-tight">1<span class="text-lg">인</span> 1<span class="text-lg">PC</span></div><div class="mt-1 text-sm text-slate-500">소수정예 · 1:1 맞춤</div></div>
+          <div class="p-5 md:p-6"><div class="text-3xl md:text-4xl font-extrabold tracking-tight">2022<span class="text-lg">~</span></div><div class="mt-1 text-sm text-slate-500">율하동 경보코아</div></div>
+        </div>
+      </div>
+
+      <!-- 흐르는 키워드 -->
+      <div class="relative border-y border-black/5 bg-brand-ink text-white py-3.5 overflow-hidden">
+        <div class="marquee gap-10 text-[15px] font-bold whitespace-nowrap">
+          <span>엔트리</span><span class="text-brand-yellow">✦</span><span>스크래치</span><span class="text-brand-yellow">✦</span><span>파이썬</span><span class="text-brand-yellow">✦</span><span>AI 프로젝트</span><span class="text-brand-yellow">✦</span><span>ITQ · DIAT</span><span class="text-brand-yellow">✦</span><span>앱 · 게임 만들기</span><span class="text-brand-yellow">✦</span><span>C / C++ 알고리즘</span><span class="text-brand-yellow">✦</span><span>SW 영재원 대비</span><span class="text-brand-yellow">✦</span><span>정보 수행평가</span><span class="text-brand-yellow">✦</span>
+          <span>엔트리</span><span class="text-brand-yellow">✦</span><span>스크래치</span><span class="text-brand-yellow">✦</span><span>파이썬</span><span class="text-brand-yellow">✦</span><span>AI 프로젝트</span><span class="text-brand-yellow">✦</span><span>ITQ · DIAT</span><span class="text-brand-yellow">✦</span><span>앱 · 게임 만들기</span><span class="text-brand-yellow">✦</span><span>C / C++ 알고리즘</span><span class="text-brand-yellow">✦</span><span>SW 영재원 대비</span><span class="text-brand-yellow">✦</span><span>정보 수행평가</span><span class="text-brand-yellow">✦</span>
         </div>
       </div>
     </section>
 
     <!-- 2. 무료 체험 -->
-    <section id="trial" class="py-16 md:py-24">
+    <section id="trial" class="py-20 md:py-28">
       <div class="max-w-6xl mx-auto px-4 md:px-6">
-        <div class="reveal rounded-3xl bg-slate-900 text-white p-7 md:p-12 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
-          <div>
-            <p class="text-amber-300 font-bold text-sm">무료 체험 수업</p>
-            <h2 class="mt-2 text-2xl md:text-4xl font-extrabold leading-snug">다른 학원 다녀도 괜찮아요.<br>한 번 와서 만들어 보세요.</h2>
-            <p class="mt-4 text-slate-300 leading-relaxed">지금 다니는 곳은 그대로 두셔도 됩니다. 2시간 동안 아이가 직접 작은 게임을 만들어 보고, 수업이 맞는지 보고 결정하세요.</p>
-            <button data-program="무료 체험 수업" class="open-booking mt-7 bg-white text-slate-900 rounded-xl px-6 py-3.5 font-bold inline-flex items-center gap-2 hover:bg-slate-100">무료 체험 신청하기 <i data-feather="arrow-right" class="w-4 h-4"></i></button>
+        <div class="reveal relative overflow-hidden rounded-[32px] bg-brand-blue text-white p-7 md:p-14">
+          <div class="absolute -right-16 -bottom-16 w-72 h-72 rounded-full bg-brand-yellow/90"></div>
+          <div class="absolute right-10 top-10 w-24 h-24 rounded-3xl border-[10px] border-white/15 rotate-12"></div>
+          <div class="relative grid lg:grid-cols-[1fr_1.05fr] gap-10 items-center">
+            <div>
+              <span class="inline-block bg-white/15 rounded-full px-3 py-1 text-sm font-bold">무료 체험 수업</span>
+              <h2 class="mt-4 text-[30px] md:text-[44px] leading-[1.15] font-extrabold tracking-tight">다른 학원 다녀도<br>괜찮아요</h2>
+              <p class="mt-4 text-blue-100 text-[17px] leading-relaxed max-w-md">지금 다니는 곳은 그대로 두세요. 2시간 동안 아이가 직접 작은 게임을 만들어 보고, 맞는지 보고 결정하시면 됩니다.</p>
+              <button data-program="무료 체험 수업" class="open-booking mt-8 bg-white text-brand-ink rounded-2xl px-6 py-4 font-bold inline-flex items-center gap-2 hover:bg-brand-paper">무료 체험 신청하기 <i data-feather="arrow-right" class="w-4 h-4"></i></button>
+            </div>
+            <ol class="relative grid gap-3">
+              <li class="flex items-center gap-4 bg-white text-brand-ink rounded-2xl p-4 shadow-lg"><span class="w-11 h-11 shrink-0 rounded-xl bg-brand-paper flex items-center justify-center font-extrabold text-brand-blue">1</span><div><b>신청</b><p class="text-sm text-slate-500">이름·학년·연락처만 남기면 끝</p></div></li>
+              <li class="flex items-center gap-4 bg-white text-brand-ink rounded-2xl p-4 shadow-lg md:ml-6"><span class="w-11 h-11 shrink-0 rounded-xl bg-brand-paper flex items-center justify-center font-extrabold text-brand-blue">2</span><div><b>일정 연락</b><p class="text-sm text-slate-500">아이 시간에 맞춰 날짜를 정해요</p></div></li>
+              <li class="flex items-center gap-4 bg-white text-brand-ink rounded-2xl p-4 shadow-lg md:ml-12"><span class="w-11 h-11 shrink-0 rounded-xl bg-brand-yellow flex items-center justify-center font-extrabold">3</span><div><b>2시간 체험</b><p class="text-sm text-slate-500">나만의 게임을 직접 만들어 봐요</p></div></li>
+              <li class="flex items-center gap-4 bg-white text-brand-ink rounded-2xl p-4 shadow-lg md:ml-6"><span class="w-11 h-11 shrink-0 rounded-xl bg-brand-paper flex items-center justify-center font-extrabold text-brand-blue">4</span><div><b>결정은 그다음에</b><p class="text-sm text-slate-500">수준에 맞는 반과 시간을 안내드려요</p></div></li>
+            </ol>
           </div>
-          <ol class="grid gap-3">
-            <li class="flex gap-4 bg-white/5 border border-white/10 rounded-2xl p-4"><span class="font-eng font-extrabold text-amber-300">01</span><div><b>신청</b><p class="text-sm text-slate-300 mt-0.5">이름·학년·연락처만 남기면 끝</p></div></li>
-            <li class="flex gap-4 bg-white/5 border border-white/10 rounded-2xl p-4"><span class="font-eng font-extrabold text-amber-300">02</span><div><b>일정 연락</b><p class="text-sm text-slate-300 mt-0.5">아이 시간에 맞춰 체험 날짜를 정해요</p></div></li>
-            <li class="flex gap-4 bg-white/5 border border-white/10 rounded-2xl p-4"><span class="font-eng font-extrabold text-amber-300">03</span><div><b>2시간 체험</b><p class="text-sm text-slate-300 mt-0.5">나만의 게임을 직접 만들어 봐요</p></div></li>
-            <li class="flex gap-4 bg-white/5 border border-white/10 rounded-2xl p-4"><span class="font-eng font-extrabold text-amber-300">04</span><div><b>결정은 그다음에</b><p class="text-sm text-slate-300 mt-0.5">수준에 맞는 반과 시간을 안내드려요</p></div></li>
-          </ol>
         </div>
       </div>
     </section>
 
     <!-- 3. 겨울방학 특강 -->
-    <section id="winter" class="py-16 md:py-24 bg-amber-50/50">
-      <div class="max-w-6xl mx-auto px-4 md:px-6">
-        <div class="reveal max-w-2xl">
-          <p class="text-amber-600 font-bold text-sm">2027 겨울방학 특강</p>
-          <h2 class="mt-2 text-2xl md:text-4xl font-extrabold text-slate-900">정해진 반에 맞추지 않아요</h2>
-          <p class="mt-3 text-slate-600 leading-relaxed">아이 수준과 목표를 먼저 듣고, 비슷한 학생끼리 소수 그룹을 만듭니다. 1~2월 방학 집중 · 일정과 수업료는 상담 때 안내드려요.</p>
+    <section id="winter" class="py-20 md:py-28 bg-white">
+      <div class="max-w-6xl mx-auto px-4 md:px-6 grid lg:grid-cols-[0.9fr_1.1fr] gap-12">
+        <div class="reveal lg:sticky lg:top-28 self-start">
+          <p class="font-bold text-brand-sun">2027 겨울방학 특강</p>
+          <h2 class="mt-3 text-[30px] md:text-[44px] leading-[1.15] font-extrabold tracking-tight">정해진 반에<br>맞추지 않아요</h2>
+          <p class="mt-4 text-slate-600 text-[17px] leading-relaxed">아이 수준과 목표를 먼저 듣고, 비슷한 학생끼리 소수 그룹을 만듭니다. 1~2월 방학 집중, 일정과 수업료는 상담 때 안내드려요.</p>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="bg-brand-paper ring-1 ring-black/5 rounded-full px-3.5 py-1.5 text-sm font-medium">코딩 첫걸음</span>
+            <span class="bg-brand-paper ring-1 ring-black/5 rounded-full px-3.5 py-1.5 text-sm font-medium">파이썬 기초</span>
+            <span class="bg-brand-yellow/40 ring-1 ring-brand-sun/30 rounded-full px-3.5 py-1.5 text-sm font-medium">ITQ·DIAT 자격증</span>
+            <span class="bg-brand-paper ring-1 ring-black/5 rounded-full px-3.5 py-1.5 text-sm font-medium">SW 영재원 대비</span>
+            <span class="bg-brand-paper ring-1 ring-black/5 rounded-full px-3.5 py-1.5 text-sm font-medium">공모전·프로젝트</span>
+            <span class="bg-brand-paper ring-1 ring-black/5 rounded-full px-3.5 py-1.5 text-sm font-medium">정보 수행평가</span>
+          </div>
+          <button data-program="겨울방학 맞춤 그룹" class="open-booking mt-8 bg-brand-ink hover:bg-black text-white rounded-2xl px-6 py-4 font-bold inline-flex items-center gap-2">겨울특강 상담 신청 <i data-feather="arrow-right" class="w-4 h-4"></i></button>
         </div>
-        <div class="reveal mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div class="bg-white rounded-2xl p-5 border border-amber-100"><span class="font-eng text-xs font-bold text-amber-600">STEP 1</span><h3 class="mt-1 font-bold">상담 신청</h3><p class="mt-1 text-sm text-slate-600">학년, 코딩 경험, 목표, 가능한 시간을 알려 주세요.</p></div>
-          <div class="bg-white rounded-2xl p-5 border border-amber-100"><span class="font-eng text-xs font-bold text-amber-600">STEP 2</span><h3 class="mt-1 font-bold">수준 진단</h3><p class="mt-1 text-sm text-slate-600">간단한 진단으로 지금 실력에 맞는 방향을 정해요.</p></div>
-          <div class="bg-white rounded-2xl p-5 border border-amber-100"><span class="font-eng text-xs font-bold text-amber-600">STEP 3</span><h3 class="mt-1 font-bold">맞춤 그룹</h3><p class="mt-1 text-sm text-slate-600">수준·목표·시간이 맞는 친구들끼리 소수 정예로.</p></div>
-          <div class="bg-white rounded-2xl p-5 border border-amber-100"><span class="font-eng text-xs font-bold text-amber-600">STEP 4</span><h3 class="mt-1 font-bold">결과 공유</h3><p class="mt-1 text-sm text-slate-600">방학 마지막에 만든 결과물과 성장 과정을 보여 드려요.</p></div>
-        </div>
-        <div class="reveal mt-6 flex flex-wrap gap-2">
-          <span class="bg-white border border-slate-200 rounded-full px-3.5 py-1.5 text-sm">코딩 첫걸음 (엔트리·스크래치)</span>
-          <span class="bg-white border border-slate-200 rounded-full px-3.5 py-1.5 text-sm">파이썬 기초</span>
-          <span class="bg-white border border-slate-200 rounded-full px-3.5 py-1.5 text-sm">ITQ·DIAT 자격증</span>
-          <span class="bg-white border border-slate-200 rounded-full px-3.5 py-1.5 text-sm">SW 영재원 대비</span>
-          <span class="bg-white border border-slate-200 rounded-full px-3.5 py-1.5 text-sm">공모전 · 프로젝트</span>
-          <span class="bg-white border border-slate-200 rounded-full px-3.5 py-1.5 text-sm">학교 정보 수행평가</span>
-        </div>
-        <button data-program="겨울방학 맞춤 그룹" class="open-booking reveal mt-8 bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-6 py-3.5 font-bold inline-flex items-center gap-2">겨울특강 상담 신청 <i data-feather="arrow-right" class="w-4 h-4"></i></button>
+        <ol class="grid gap-4">
+          <li class="reveal lift rounded-3xl bg-brand-paper ring-1 ring-black/5 p-6 md:p-8 flex gap-5"><span class="text-5xl md:text-6xl font-extrabold text-brand-blue/20 leading-none">01</span><div><h3 class="text-xl font-bold">상담 신청</h3><p class="mt-1.5 text-slate-600">학년, 코딩 경험, 목표, 가능한 시간을 알려 주세요.</p></div></li>
+          <li class="reveal lift rounded-3xl bg-brand-paper ring-1 ring-black/5 p-6 md:p-8 flex gap-5"><span class="text-5xl md:text-6xl font-extrabold text-brand-blue/20 leading-none">02</span><div><h3 class="text-xl font-bold">수준 진단</h3><p class="mt-1.5 text-slate-600">간단한 진단으로 지금 실력에 맞는 방향을 정해요.</p></div></li>
+          <li class="reveal lift rounded-3xl bg-brand-paper ring-1 ring-black/5 p-6 md:p-8 flex gap-5"><span class="text-5xl md:text-6xl font-extrabold text-brand-blue/20 leading-none">03</span><div><h3 class="text-xl font-bold">맞춤 그룹 구성</h3><p class="mt-1.5 text-slate-600">수준·목표·시간이 맞는 친구들끼리 소수 정예로.</p></div></li>
+          <li class="reveal lift rounded-3xl bg-brand-yellow ring-1 ring-brand-sun/30 p-6 md:p-8 flex gap-5"><span class="text-5xl md:text-6xl font-extrabold text-brand-ink/20 leading-none">04</span><div><h3 class="text-xl font-bold">결과물 공유</h3><p class="mt-1.5 text-brand-ink/70">방학 마지막에 만든 결과물과 성장 과정을 보여 드려요.</p></div></li>
+        </ol>
       </div>
     </section>
 
     <!-- 4. 수업 과정 -->
-    <section id="courses" class="py-16 md:py-24">
+    <section id="courses" class="py-20 md:py-28">
       <div class="max-w-6xl mx-auto px-4 md:px-6">
-        <div class="reveal max-w-2xl">
-          <p class="text-blue-600 font-bold text-sm">수업 과정</p>
-          <h2 class="mt-2 text-2xl md:text-4xl font-extrabold text-slate-900">코딩도, 자격증도 단계별로</h2>
-          <p class="mt-3 text-slate-600">초등부터 고등까지, 학년과 수준에 맞춰 이어지는 로드맵입니다.</p>
-        </div>
-        <div class="mt-8 grid md:grid-cols-3 gap-4">
-          <article class="reveal rounded-3xl border border-slate-200 p-6 flex flex-col">
-            <span class="font-eng text-xs font-bold text-blue-600">STEP 01 · 기초</span>
-            <h3 class="mt-2 text-xl font-bold">블록코딩 & 컴퓨터 자격증</h3>
-            <p class="mt-2 text-sm text-slate-600 leading-relaxed">엔트리·스크래치로 논리를 눈으로 보며 익히고, 로봇 교구로 코드가 실제로 움직이는 걸 체험해요. 수행평가에 도움 되는 OA 자격증도 함께 준비합니다.</p>
-            <div class="mt-4 flex flex-wrap gap-1.5 text-xs font-medium">
-              <span class="bg-blue-50 text-blue-700 rounded-md px-2 py-1">엔트리 · 스크래치</span>
-              <span class="bg-blue-50 text-blue-700 rounded-md px-2 py-1">로봇</span>
-              <span class="bg-amber-50 text-amber-700 rounded-md px-2 py-1">ITQ · DIAT</span>
-              <span class="bg-amber-50 text-amber-700 rounded-md px-2 py-1">엑셀 · 파워포인트 · 한글</span>
-            </div>
-          </article>
-          <article class="reveal rounded-3xl border border-slate-200 p-6 flex flex-col">
-            <span class="font-eng text-xs font-bold text-blue-600">STEP 02 · 실전</span>
-            <h3 class="mt-2 text-xl font-bold">파이썬 & AI 프로젝트</h3>
-            <p class="mt-2 text-sm text-slate-600 leading-relaxed">텍스트 코딩으로 넘어가요. 파이썬 문법을 익히고, 데이터와 AI를 써서 실제 생활 속 문제를 풀어 보는 프로젝트를 만듭니다.</p>
-            <div class="mt-4 flex flex-wrap gap-1.5 text-xs font-medium">
-              <span class="bg-blue-50 text-blue-700 rounded-md px-2 py-1">Python</span>
-              <span class="bg-blue-50 text-blue-700 rounded-md px-2 py-1">데이터 · AI</span>
-              <span class="bg-blue-50 text-blue-700 rounded-md px-2 py-1">앱 · 게임 만들기</span>
-            </div>
-          </article>
-          <article class="reveal rounded-3xl border border-slate-200 p-6 flex flex-col">
-            <span class="font-eng text-xs font-bold text-blue-600">STEP 03 · 심화</span>
-            <h3 class="mt-2 text-xl font-bold">알고리즘 & 포트폴리오</h3>
-            <p class="mt-2 text-sm text-slate-600 leading-relaxed">영재고·과학고 입시와 특기자 전형을 준비해요. C/C++ 알고리즘 풀이와 나만의 프로젝트 결과물을 완성합니다.</p>
-            <div class="mt-4 flex flex-wrap gap-1.5 text-xs font-medium">
-              <span class="bg-blue-50 text-blue-700 rounded-md px-2 py-1">C / C++</span>
-              <span class="bg-blue-50 text-blue-700 rounded-md px-2 py-1">알고리즘</span>
-              <span class="bg-blue-50 text-blue-700 rounded-md px-2 py-1">포트폴리오</span>
-            </div>
-          </article>
-        </div>
-        <div class="reveal mt-4 rounded-3xl bg-blue-600 text-white p-6 md:p-8 grid md:grid-cols-[auto_1fr_auto] gap-6 items-center">
-          <img src="images/swmirae (5).png" alt="바이브 코딩 과정 안내" class="w-28 md:w-32 rounded-xl shadow-lg">
+        <div class="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <span class="text-xs font-bold bg-white/20 rounded-full px-2.5 py-1">모집 중</span>
-            <h3 class="mt-2 text-xl md:text-2xl font-bold">바이브 코딩 · AI로 내 프로젝트 만들기</h3>
-            <p class="mt-1.5 text-blue-100 text-sm">아이디어만 가져오세요. AI와 함께 앱·게임을 직접 만들어 완성하는 과정입니다. 한국코드페어 수상작 제작 경험을 바탕으로 지도합니다.</p>
+            <p class="font-bold text-brand-blue">수업 과정</p>
+            <h2 class="mt-3 text-[30px] md:text-[44px] leading-[1.15] font-extrabold tracking-tight">코딩도, 자격증도<br>단계별로</h2>
           </div>
-          <button data-program="정규 과정" class="open-booking bg-white text-blue-700 rounded-xl px-5 py-3 font-bold whitespace-nowrap hover:bg-blue-50">상담 신청</button>
+          <p class="text-slate-600 md:max-w-sm md:text-right">초등부터 고등까지, 학년과 수준에 맞춰 이어지는 로드맵입니다.</p>
+        </div>
+        <div class="mt-10 grid md:grid-cols-3 gap-4">
+          <article class="reveal lift relative rounded-[28px] bg-white ring-1 ring-black/5 p-7 overflow-hidden">
+            <div class="absolute inset-x-0 top-0 h-1.5 bg-brand-yellow"></div>
+            <div class="flex items-center justify-between"><span class="font-mono text-sm font-bold text-slate-400">STEP 01</span><span class="text-xs font-bold bg-brand-yellow/40 rounded-full px-2.5 py-1">기초</span></div>
+            <h3 class="mt-5 text-2xl font-extrabold tracking-tight">블록코딩 &amp;<br>컴퓨터 자격증</h3>
+            <p class="mt-3 text-[15px] text-slate-600 leading-relaxed">엔트리·스크래치로 논리를 눈으로 보며 익히고, 로봇 교구로 코드가 움직이는 걸 체험해요. 수행평가에 도움 되는 OA 자격증도 함께 준비합니다.</p>
+            <div class="mt-5 flex flex-wrap gap-1.5 text-xs font-semibold"><span class="bg-brand-paper rounded-md px-2 py-1">엔트리 · 스크래치</span><span class="bg-brand-paper rounded-md px-2 py-1">로봇</span><span class="bg-brand-yellow/40 rounded-md px-2 py-1">ITQ · DIAT</span><span class="bg-brand-yellow/40 rounded-md px-2 py-1">엑셀 · PPT · 한글</span></div>
+          </article>
+          <article class="reveal lift relative rounded-[28px] bg-white ring-1 ring-black/5 p-7 overflow-hidden">
+            <div class="absolute inset-x-0 top-0 h-1.5 bg-brand-sky"></div>
+            <div class="flex items-center justify-between"><span class="font-mono text-sm font-bold text-slate-400">STEP 02</span><span class="text-xs font-bold bg-blue-50 text-brand-blue rounded-full px-2.5 py-1">실전</span></div>
+            <h3 class="mt-5 text-2xl font-extrabold tracking-tight">파이썬 &amp;<br>AI 프로젝트</h3>
+            <p class="mt-3 text-[15px] text-slate-600 leading-relaxed">텍스트 코딩으로 넘어가요. 파이썬 문법을 익히고, 데이터와 AI로 생활 속 문제를 푸는 프로젝트를 만듭니다.</p>
+            <div class="mt-5 flex flex-wrap gap-1.5 text-xs font-semibold"><span class="bg-brand-paper rounded-md px-2 py-1">Python</span><span class="bg-brand-paper rounded-md px-2 py-1">데이터 · AI</span><span class="bg-brand-paper rounded-md px-2 py-1">앱 · 게임 만들기</span></div>
+          </article>
+          <article class="reveal lift relative rounded-[28px] bg-brand-ink text-white p-7 overflow-hidden">
+            <div class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-sky to-brand-yellow"></div>
+            <div class="flex items-center justify-between"><span class="font-mono text-sm font-bold text-white/40">STEP 03</span><span class="text-xs font-bold bg-white/10 rounded-full px-2.5 py-1">심화</span></div>
+            <h3 class="mt-5 text-2xl font-extrabold tracking-tight">알고리즘 &amp;<br>포트폴리오</h3>
+            <p class="mt-3 text-[15px] text-white/70 leading-relaxed">영재고·과학고 입시와 특기자 전형을 준비해요. C/C++ 알고리즘 풀이와 나만의 프로젝트 결과물을 완성합니다.</p>
+            <div class="mt-5 flex flex-wrap gap-1.5 text-xs font-semibold"><span class="bg-white/10 rounded-md px-2 py-1">C / C++</span><span class="bg-white/10 rounded-md px-2 py-1">알고리즘</span><span class="bg-white/10 rounded-md px-2 py-1">포트폴리오</span></div>
+          </article>
+        </div>
+        <div class="reveal mt-4 relative overflow-hidden rounded-[28px] bg-brand-yellow p-6 md:p-10 grid md:grid-cols-[auto_1fr_auto] gap-6 md:gap-8 items-center">
+          <img src="images/swmirae (5).png" alt="바이브 코딩 과정 안내" class="w-28 md:w-36 rounded-2xl shadow-xl rotate-[-4deg]">
+          <div>
+            <span class="text-xs font-bold bg-brand-ink text-white rounded-full px-2.5 py-1">모집 중</span>
+            <h3 class="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight">바이브 코딩 · AI로 내 프로젝트 만들기</h3>
+            <p class="mt-2 text-brand-ink/70">아이디어만 가져오세요. AI와 함께 앱·게임을 직접 만들어 완성하는 과정이에요. 한국코드페어 수상작 제작 경험을 바탕으로 지도합니다.</p>
+          </div>
+          <button data-program="정규 과정" class="open-booking bg-brand-ink text-white rounded-2xl px-6 py-4 font-bold whitespace-nowrap hover:bg-black">상담 신청</button>
         </div>
       </div>
     </section>
 
     <!-- 5. 선생님 -->
-    <section id="teachers" class="py-16 md:py-24 bg-slate-50">
+    <section id="teachers" class="py-20 md:py-28 bg-white">
       <div class="max-w-6xl mx-auto px-4 md:px-6">
-        <div class="reveal max-w-2xl">
-          <p class="text-blue-600 font-bold text-sm">선생님 소개</p>
-          <h2 class="mt-2 text-2xl md:text-4xl font-extrabold text-slate-900">아이 수준을 먼저 보는 선생님들</h2>
+        <div class="reveal">
+          <p class="font-bold text-brand-blue">선생님 소개</p>
+          <h2 class="mt-3 text-[30px] md:text-[44px] leading-[1.15] font-extrabold tracking-tight">아이 수준을<br class="md:hidden"> 먼저 보는 선생님들</h2>
         </div>
-        <div class="mt-8 grid md:grid-cols-2 gap-4">
-          <div class="reveal bg-white rounded-3xl p-6 md:p-8 border border-slate-200">
-            <div class="flex items-center gap-3"><div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center"><i data-feather="award"></i></div><div><p class="text-xs font-bold text-amber-600">원장 직강</p><h3 class="text-lg font-bold">원장 선생님</h3></div></div>
-            <ul class="mt-5 space-y-2 text-sm text-slate-700">
-              <li class="flex gap-2"><i data-feather="check" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i>컴퓨터·코딩 교육 20년+ 경력</li>
-              <li class="flex gap-2"><i data-feather="check" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i>OA 자격증(ITQ·DIAT) · 수행평가 지도</li>
-              <li class="flex gap-2"><i data-feather="check" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i>아이별 맞춤 커리큘럼 설계</li>
+        <div class="mt-10 grid md:grid-cols-2 gap-4">
+          <div class="reveal rounded-[28px] bg-brand-paper ring-1 ring-black/5 p-7 md:p-9">
+            <div class="flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-brand-yellow flex items-center justify-center"><i data-feather="award"></i></div><div><p class="text-sm font-bold text-brand-sun">원장 직강</p><h3 class="text-xl font-extrabold">원장 선생님</h3></div></div>
+            <p class="mt-6 text-2xl font-bold leading-snug tracking-tight">"아이들의 잠재력을<br>정확하게 진단합니다."</p>
+            <ul class="mt-6 grid gap-2.5 text-[15px] text-slate-700">
+              <li class="flex gap-2.5"><i data-feather="check-circle" class="w-5 h-5 text-brand-sun shrink-0"></i>컴퓨터·코딩 교육 20년+ 경력</li>
+              <li class="flex gap-2.5"><i data-feather="check-circle" class="w-5 h-5 text-brand-sun shrink-0"></i>OA 자격증(ITQ·DIAT) · 수행평가 지도</li>
+              <li class="flex gap-2.5"><i data-feather="check-circle" class="w-5 h-5 text-brand-sun shrink-0"></i>아이별 맞춤 커리큘럼 설계</li>
             </ul>
-            <p class="mt-5 text-sm text-slate-500">"아이들의 잠재력을 정확하게 진단합니다."</p>
           </div>
-          <div class="reveal bg-white rounded-3xl p-6 md:p-8 border border-slate-200">
-            <div class="flex items-center gap-3"><div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center"><i data-feather="cpu"></i></div><div><p class="text-xs font-bold text-blue-600">맞춤 그룹 담당</p><h3 class="text-lg font-bold">코딩 · AI 담당 강사</h3></div></div>
-            <ul class="mt-5 space-y-2 text-sm text-slate-700">
-              <li class="flex gap-2"><i data-feather="check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i>경남과학고등학교 졸업</li>
-              <li class="flex gap-2"><i data-feather="check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i>KAIST 전자공학과 학사·석사</li>
-              <li class="flex gap-2"><i data-feather="check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i>IT 스타트업 개발 3년</li>
-              <li class="flex gap-2"><i data-feather="check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i>부산대학교 치의학전문대학원 재학</li>
+          <div class="reveal rounded-[28px] bg-brand-paper ring-1 ring-black/5 p-7 md:p-9">
+            <div class="flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-brand-blue text-white flex items-center justify-center"><i data-feather="cpu"></i></div><div><p class="text-sm font-bold text-brand-blue">맞춤 그룹 담당</p><h3 class="text-xl font-extrabold">코딩 · AI 담당 강사</h3></div></div>
+            <p class="mt-6 text-2xl font-bold leading-snug tracking-tight">"아이 수준과 목표에 맞춰<br>그룹을 직접 구성합니다."</p>
+            <ul class="mt-6 grid gap-2.5 text-[15px] text-slate-700">
+              <li class="flex gap-2.5"><i data-feather="check-circle" class="w-5 h-5 text-brand-blue shrink-0"></i>경남과학고등학교 졸업</li>
+              <li class="flex gap-2.5"><i data-feather="check-circle" class="w-5 h-5 text-brand-blue shrink-0"></i>KAIST 전자공학과 학사·석사</li>
+              <li class="flex gap-2.5"><i data-feather="check-circle" class="w-5 h-5 text-brand-blue shrink-0"></i>IT 스타트업 개발 3년</li>
+              <li class="flex gap-2.5"><i data-feather="check-circle" class="w-5 h-5 text-brand-blue shrink-0"></i>부산대학교 치의학전문대학원 재학</li>
             </ul>
-            <p class="mt-5 text-sm text-slate-500">"아이 수준과 목표에 맞춰 그룹을 직접 구성합니다."</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- 6. 시설 -->
-    <section class="py-16 md:py-24">
+    <section class="py-20 md:py-28">
       <div class="max-w-6xl mx-auto px-4 md:px-6">
-        <div class="reveal max-w-2xl">
-          <p class="text-blue-600 font-bold text-sm">학원 둘러보기</p>
-          <h2 class="mt-2 text-2xl md:text-4xl font-extrabold text-slate-900">한 명당 한 대, 최신 PC</h2>
+        <div class="reveal flex items-end justify-between gap-4">
+          <div><p class="font-bold text-brand-blue">학원 둘러보기</p><h2 class="mt-3 text-[30px] md:text-[44px] leading-[1.15] font-extrabold tracking-tight">한 명당 한 대,<br>최신 PC</h2></div>
         </div>
-        <div class="reveal mt-8 grid grid-cols-2 md:grid-cols-3 gap-3">
-          <figure class="col-span-2 md:col-span-2 md:row-span-2"><img src="images/classroom.jpg" alt="율하 코딩학원 교실" class="w-full h-full aspect-[4/3] object-cover rounded-2xl"><figcaption class="mt-2 text-sm text-slate-500">수업 교실</figcaption></figure>
-          <figure><img src="images/desk.jpg" alt="율하 코딩학원 PC 자리" class="w-full aspect-square object-cover rounded-2xl"><figcaption class="mt-2 text-sm text-slate-500">1인 1PC</figcaption></figure>
-          <figure><img src="images/lobby.jpg" alt="율하 코딩학원 라운지" class="w-full aspect-square object-cover rounded-2xl"><figcaption class="mt-2 text-sm text-slate-500">쉬는 공간</figcaption></figure>
+        <div class="reveal mt-10 -mx-4 px-4 md:mx-0 md:px-0 flex md:grid md:grid-cols-[1.6fr_1fr] md:grid-rows-2 gap-3 overflow-x-auto snap-x hide-scroll">
+          <figure class="relative shrink-0 w-[85%] md:w-auto md:row-span-2 snap-start rounded-[24px] overflow-hidden"><img src="images/classroom.jpg" alt="율하 코딩학원 교실" class="w-full h-full aspect-[4/3] md:aspect-auto object-cover"><figcaption class="absolute left-4 bottom-4 bg-white/90 backdrop-blur rounded-full px-3 py-1 text-sm font-bold">수업 교실</figcaption></figure>
+          <figure class="relative shrink-0 w-[70%] md:w-auto snap-start rounded-[24px] overflow-hidden"><img src="images/desk.jpg" alt="율하 코딩학원 PC 자리" class="w-full h-full aspect-[4/3] object-cover"><figcaption class="absolute left-4 bottom-4 bg-white/90 backdrop-blur rounded-full px-3 py-1 text-sm font-bold">1인 1PC</figcaption></figure>
+          <figure class="relative shrink-0 w-[70%] md:w-auto snap-start rounded-[24px] overflow-hidden"><img src="images/lobby.jpg" alt="율하 코딩학원 라운지" class="w-full h-full aspect-[4/3] object-cover"><figcaption class="absolute left-4 bottom-4 bg-white/90 backdrop-blur rounded-full px-3 py-1 text-sm font-bold">쉬는 공간</figcaption></figure>
         </div>
       </div>
     </section>
 
     <!-- 7. 학원 소식 -->
-    <section class="py-16 md:py-20 bg-slate-50">
+    <section class="py-20 md:py-24 bg-white">
       <div class="max-w-6xl mx-auto px-4 md:px-6">
         <div class="reveal flex items-end justify-between gap-4">
-          <div><p class="text-blue-600 font-bold text-sm">학원 소식</p><h2 class="mt-2 text-2xl md:text-3xl font-extrabold text-slate-900">블로그에서 더 보기</h2></div>
-          <a href="https://blog.naver.com/swhisclass" target="_blank" rel="noopener" class="text-sm font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 shrink-0">전체보기 <i data-feather="chevron-right" class="w-4 h-4"></i></a>
+          <div><p class="font-bold text-brand-blue">학원 소식</p><h2 class="mt-3 text-[28px] md:text-[36px] font-extrabold tracking-tight">블로그에서 더 보기</h2></div>
+          <a href="https://blog.naver.com/swhisclass" target="_blank" rel="noopener" class="text-sm font-bold text-slate-500 hover:text-brand-ink flex items-center gap-1 shrink-0">전체보기 <i data-feather="arrow-up-right" class="w-4 h-4"></i></a>
         </div>
-        <div class="mt-6 grid md:grid-cols-2 gap-4">
-          <a href="https://blog.naver.com/swhisclass/224483080050" target="_blank" rel="noopener" class="reveal block bg-white rounded-2xl p-6 border border-slate-200 hover:border-blue-300 hover:shadow-lg transition">
-            <span class="text-xs font-bold text-amber-600">겨울방학 특강</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug">율하 코딩학원 겨울방학 특강, 정해진 반 말고 아이한테 맞춰서 해요</h3>
-            <p class="mt-2 text-sm text-slate-500">2026.11.19</p>
+        <div class="mt-8 grid md:grid-cols-2 gap-4">
+          <a href="https://blog.naver.com/swhisclass/224483080050" target="_blank" rel="noopener" class="reveal lift group block rounded-[24px] bg-brand-paper ring-1 ring-black/5 p-7">
+            <span class="text-xs font-bold bg-brand-yellow/50 rounded-full px-2.5 py-1">겨울방학 특강</span>
+            <h3 class="mt-4 font-bold text-xl leading-snug tracking-tight group-hover:text-brand-blue">율하 코딩학원 겨울방학 특강, 정해진 반 말고 아이한테 맞춰서 해요</h3>
+            <p class="mt-3 text-sm text-slate-500">2026.11.19</p>
           </a>
-          <a href="https://blog.naver.com/swhisclass/223369313025" target="_blank" rel="noopener" class="reveal block bg-white rounded-2xl p-6 border border-slate-200 hover:border-blue-300 hover:shadow-lg transition">
-            <span class="text-xs font-bold text-blue-600">커리큘럼</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug">재미있고 성취감 있는 SW미래영재 파이썬 마스터 과정</h3>
-            <p class="mt-2 text-sm text-slate-500">텍스트 코딩이 어렵다면, 예제와 프로젝트로 시작해요</p>
+          <a href="https://blog.naver.com/swhisclass/223369313025" target="_blank" rel="noopener" class="reveal lift group block rounded-[24px] bg-brand-paper ring-1 ring-black/5 p-7">
+            <span class="text-xs font-bold bg-blue-50 text-brand-blue rounded-full px-2.5 py-1">커리큘럼</span>
+            <h3 class="mt-4 font-bold text-xl leading-snug tracking-tight group-hover:text-brand-blue">재미있고 성취감 있는 SW미래영재 파이썬 마스터 과정</h3>
+            <p class="mt-3 text-sm text-slate-500">텍스트 코딩이 어렵다면, 예제와 프로젝트로 시작해요</p>
           </a>
         </div>
       </div>
     </section>
 
     <!-- 8. 자주 묻는 질문 -->
-    <section id="faq" class="py-16 md:py-24">
+    <section id="faq" class="py-20 md:py-28">
       <div class="max-w-3xl mx-auto px-4 md:px-6">
-        <div class="reveal text-center">
-          <p class="text-blue-600 font-bold text-sm">자주 묻는 질문</p>
-          <h2 class="mt-2 text-2xl md:text-4xl font-extrabold text-slate-900">학부모님들이 많이 물어보세요</h2>
+        <div class="reveal">
+          <p class="font-bold text-brand-blue">자주 묻는 질문</p>
+          <h2 class="mt-3 text-[30px] md:text-[44px] leading-[1.15] font-extrabold tracking-tight">학부모님들이<br>많이 물어보세요</h2>
         </div>
-        <div class="mt-8 divide-y divide-slate-200 border-y border-slate-200">
-          <details class="reveal group py-5"><summary class="flex items-center justify-between gap-4 font-bold text-slate-900">다른 학원을 다니고 있어도 무료 체험을 들을 수 있나요?<i data-feather="plus" class="faq-icon w-5 h-5 text-slate-400 shrink-0 transition-transform"></i></summary><p class="mt-3 text-slate-600 leading-relaxed">네. 지금 다니는 학원은 그대로 두고 무료 체험 수업을 한 번 들어 보신 뒤 결정하셔도 됩니다.</p></details>
-          <details class="reveal group py-5"><summary class="flex items-center justify-between gap-4 font-bold text-slate-900">코딩을 처음 하는 초등학생도 괜찮나요?<i data-feather="plus" class="faq-icon w-5 h-5 text-slate-400 shrink-0 transition-transform"></i></summary><p class="mt-3 text-slate-600 leading-relaxed">엔트리·스크래치 같은 블록코딩부터 시작해요. 수준을 먼저 보고 비슷한 친구들끼리 소수 그룹을 만들어서 처음이어도 따라올 수 있어요.</p></details>
-          <details class="reveal group py-5"><summary class="flex items-center justify-between gap-4 font-bold text-slate-900">자격증 수업도 하나요?<i data-feather="plus" class="faq-icon w-5 h-5 text-slate-400 shrink-0 transition-transform"></i></summary><p class="mt-3 text-slate-600 leading-relaxed">ITQ, DIAT 등 OA 자격증(엑셀·파워포인트·한글) 과정을 운영해요. 학교 정보 수행평가 대비도 함께합니다.</p></details>
-          <details class="reveal group py-5"><summary class="flex items-center justify-between gap-4 font-bold text-slate-900">수업료와 시간은 어떻게 되나요?<i data-feather="plus" class="faq-icon w-5 h-5 text-slate-400 shrink-0 transition-transform"></i></summary><p class="mt-3 text-slate-600 leading-relaxed">학년, 과정, 주 몇 회인지에 따라 달라서 상담 때 안내드려요. 운영 시간은 평일 오후 1시~8시입니다.</p></details>
-          <details class="reveal group py-5"><summary class="flex items-center justify-between gap-4 font-bold text-slate-900">노트북이나 준비물이 필요한가요?<i data-feather="plus" class="faq-icon w-5 h-5 text-slate-400 shrink-0 transition-transform"></i></summary><p class="mt-3 text-slate-600 leading-relaxed">학원에 1인 1PC가 있어서 따로 준비하실 건 없어요.</p></details>
+        <div class="mt-10 grid gap-3">
+          <details class="reveal group rounded-2xl bg-white ring-1 ring-black/5 px-6 py-5 open:ring-brand-blue/30"><summary class="flex items-center justify-between gap-4 font-bold text-[17px]">다른 학원을 다니고 있어도 무료 체험을 들을 수 있나요?<span class="faq-icon w-8 h-8 shrink-0 rounded-full bg-brand-paper flex items-center justify-center transition-transform"><i data-feather="plus" class="w-4 h-4"></i></span></summary><p class="mt-3 text-slate-600 leading-relaxed">네. 지금 다니는 학원은 그대로 두고 무료 체험 수업을 한 번 들어 보신 뒤 결정하셔도 됩니다.</p></details>
+          <details class="reveal group rounded-2xl bg-white ring-1 ring-black/5 px-6 py-5 open:ring-brand-blue/30"><summary class="flex items-center justify-between gap-4 font-bold text-[17px]">코딩을 처음 하는 초등학생도 괜찮나요?<span class="faq-icon w-8 h-8 shrink-0 rounded-full bg-brand-paper flex items-center justify-center transition-transform"><i data-feather="plus" class="w-4 h-4"></i></span></summary><p class="mt-3 text-slate-600 leading-relaxed">엔트리·스크래치 같은 블록코딩부터 시작해요. 수준을 먼저 보고 비슷한 친구들끼리 소수 그룹을 만들어서 처음이어도 따라올 수 있어요.</p></details>
+          <details class="reveal group rounded-2xl bg-white ring-1 ring-black/5 px-6 py-5 open:ring-brand-blue/30"><summary class="flex items-center justify-between gap-4 font-bold text-[17px]">자격증 수업도 하나요?<span class="faq-icon w-8 h-8 shrink-0 rounded-full bg-brand-paper flex items-center justify-center transition-transform"><i data-feather="plus" class="w-4 h-4"></i></span></summary><p class="mt-3 text-slate-600 leading-relaxed">ITQ, DIAT 등 OA 자격증(엑셀·파워포인트·한글) 과정을 운영해요. 학교 정보 수행평가 대비도 함께합니다.</p></details>
+          <details class="reveal group rounded-2xl bg-white ring-1 ring-black/5 px-6 py-5 open:ring-brand-blue/30"><summary class="flex items-center justify-between gap-4 font-bold text-[17px]">수업료와 시간은 어떻게 되나요?<span class="faq-icon w-8 h-8 shrink-0 rounded-full bg-brand-paper flex items-center justify-center transition-transform"><i data-feather="plus" class="w-4 h-4"></i></span></summary><p class="mt-3 text-slate-600 leading-relaxed">학년, 과정, 주 몇 회인지에 따라 달라서 상담 때 안내드려요. 운영 시간은 평일 오후 1시~8시입니다.</p></details>
+          <details class="reveal group rounded-2xl bg-white ring-1 ring-black/5 px-6 py-5 open:ring-brand-blue/30"><summary class="flex items-center justify-between gap-4 font-bold text-[17px]">노트북이나 준비물이 필요한가요?<span class="faq-icon w-8 h-8 shrink-0 rounded-full bg-brand-paper flex items-center justify-center transition-transform"><i data-feather="plus" class="w-4 h-4"></i></span></summary><p class="mt-3 text-slate-600 leading-relaxed">학원에 1인 1PC가 있어서 따로 준비하실 건 없어요.</p></details>
         </div>
       </div>
     </section>
 
     <!-- 9. 오시는 길 -->
-    <section id="location" class="py-16 md:py-24 bg-slate-900 text-white">
-      <div class="max-w-6xl mx-auto px-4 md:px-6 grid md:grid-cols-2 gap-10 items-center">
+    <section id="location" class="py-20 md:py-28 bg-brand-ink text-white relative overflow-hidden">
+      <div class="absolute -left-24 -bottom-24 w-80 h-80 rounded-full bg-brand-blue/40 blur-3xl"></div>
+      <div class="relative max-w-6xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-10 items-center">
         <div class="reveal">
-          <p class="text-amber-300 font-bold text-sm">오시는 길 · 상담</p>
-          <h2 class="mt-2 text-2xl md:text-4xl font-extrabold">율하1로 102<br>경보코아 203호</h2>
-          <ul class="mt-6 space-y-3 text-slate-300">
-            <li class="flex gap-3"><i data-feather="map-pin" class="w-5 h-5 text-amber-300 shrink-0"></i>경상남도 김해시 율하1로 102, 경보코아 203호 (율하동)</li>
-            <li class="flex gap-3"><i data-feather="clock" class="w-5 h-5 text-amber-300 shrink-0"></i>평일 13:00–20:00 · 주말 휴무</li>
-            <li class="flex gap-3"><i data-feather="phone" class="w-5 h-5 text-amber-300 shrink-0"></i><span><a href="tel:050714155007" class="hover:text-white font-eng">0507-1415-5007</a> (대표) · <a href="tel:0559035000" class="hover:text-white font-eng">055-903-5000</a> (학원)</span></li>
+          <p class="font-bold text-brand-yellow">오시는 길 · 상담</p>
+          <h2 class="mt-3 text-[30px] md:text-[44px] leading-[1.15] font-extrabold tracking-tight">율하1로 102<br>경보코아 203호</h2>
+          <ul class="mt-7 grid gap-3.5 text-white/75">
+            <li class="flex gap-3"><i data-feather="map-pin" class="w-5 h-5 text-brand-yellow shrink-0"></i>경상남도 김해시 율하1로 102, 경보코아 203호 (율하동)</li>
+            <li class="flex gap-3"><i data-feather="clock" class="w-5 h-5 text-brand-yellow shrink-0"></i>평일 13:00–20:00 · 주말 휴무</li>
+            <li class="flex gap-3"><i data-feather="phone" class="w-5 h-5 text-brand-yellow shrink-0"></i><span><a href="tel:050714155007" class="hover:text-white">0507-1415-5007</a> (대표) · <a href="tel:0559035000" class="hover:text-white">055-903-5000</a> (학원)</span></li>
           </ul>
-          <div class="mt-7 flex flex-wrap gap-2">
-            <a href="https://naver.me/xoHigSrx" target="_blank" rel="noopener" class="bg-[#03C75A] text-white rounded-xl px-5 py-3 font-bold inline-flex items-center gap-2"><i data-feather="navigation" class="w-4 h-4"></i>네이버 지도</a>
-            <a href="https://pf.kakao.com/_agqvX/chat" target="_blank" rel="noopener" class="bg-[#FEE500] text-[#191919] rounded-xl px-5 py-3 font-bold inline-flex items-center gap-2"><i data-feather="message-circle" class="w-4 h-4"></i>카톡 상담</a>
-            <a href="https://blog.naver.com/swhisclass" target="_blank" rel="noopener" class="bg-white/10 text-white rounded-xl px-5 py-3 font-bold inline-flex items-center gap-2"><i data-feather="book-open" class="w-4 h-4"></i>블로그</a>
+          <div class="mt-8 flex flex-wrap gap-2">
+            <a href="https://naver.me/xoHigSrx" target="_blank" rel="noopener" class="bg-[#03C75A] text-white rounded-2xl px-5 py-3.5 font-bold inline-flex items-center gap-2"><i data-feather="navigation" class="w-4 h-4"></i>네이버 지도</a>
+            <a href="https://pf.kakao.com/_agqvX/chat" target="_blank" rel="noopener" class="bg-[#FEE500] text-[#191919] rounded-2xl px-5 py-3.5 font-bold inline-flex items-center gap-2"><i data-feather="message-circle" class="w-4 h-4"></i>카톡 상담</a>
+            <a href="https://blog.naver.com/swhisclass" target="_blank" rel="noopener" class="bg-white/10 hover:bg-white/15 text-white rounded-2xl px-5 py-3.5 font-bold inline-flex items-center gap-2"><i data-feather="book-open" class="w-4 h-4"></i>블로그</a>
           </div>
         </div>
-        <div class="reveal bg-white text-slate-900 rounded-3xl p-6 md:p-8">
-          <h3 class="text-xl font-bold">무료 체험 · 상담 신청</h3>
-          <p class="mt-2 text-sm text-slate-600">이름·학년·연락처만 남겨 주시면 선생님이 직접 연락드려요.</p>
-          <button data-program="무료 체험 수업" class="open-booking mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-4 font-bold">무료 체험 신청하기</button>
-          <button data-program="전화상담신청" class="open-booking mt-2 w-full bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl py-4 font-bold">전화 상담만 받기</button>
+        <div class="reveal rounded-[28px] bg-white text-brand-ink p-7 md:p-9">
+          <div class="flex items-center gap-3"><img src="images/Gemini_Generated_Image_5q7wm5q7wm5q7wm5.png" alt="" class="w-12 h-12 rounded-full ring-1 ring-black/5"><div><h3 class="text-xl font-extrabold">무료 체험 · 상담 신청</h3><p class="text-sm text-slate-500">선생님이 직접 연락드려요</p></div></div>
+          <button data-program="무료 체험 수업" class="open-booking mt-6 w-full bg-brand-blue hover:bg-blue-700 text-white rounded-2xl py-4 font-bold">무료 체험 신청하기</button>
+          <button data-program="전화상담신청" class="open-booking mt-2 w-full bg-brand-paper hover:bg-slate-100 rounded-2xl py-4 font-bold">전화 상담만 받기</button>
         </div>
       </div>
     </section>
 
-    <footer class="py-10 bg-slate-950 text-slate-500 text-sm">
+    <footer class="py-10 bg-black text-white/40 text-sm">
       <div class="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <p><b class="text-slate-300">SW미래영재컴퓨터학원</b> · 경상남도 김해시 율하1로 102 경보코아 203호</p>
+        <p><b class="text-white/80"><span class="text-brand-sky">S</span><span class="text-brand-yellow">W</span>미래영재컴퓨터학원</b> · 경상남도 김해시 율하1로 102 경보코아 203호</p>
         <p>© 2026 SW MIRAE ACADEMY</p>
       </div>
     </footer>
   </main>
 
   <!-- 휴대폰 하단 고정 버튼 -->
-  <div class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-100 md:hidden z-40 safe-bottom px-3 pt-3">
+  <div class="fixed bottom-0 inset-x-0 glass border-t border-black/5 md:hidden z-40 safe-bottom px-3 pt-3">
     <div class="flex gap-2">
-      <a href="tel:050714155007" class="flex-1 bg-white border border-slate-200 text-slate-800 rounded-xl py-3.5 font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><i data-feather="phone" class="w-4 h-4"></i>전화</a>
-      <a href="https://pf.kakao.com/_agqvX/chat" target="_blank" rel="noopener" class="flex-1 bg-[#FEE500] text-[#191919] rounded-xl py-3.5 font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><i data-feather="message-circle" class="w-4 h-4"></i>카톡</a>
-      <button data-program="무료 체험 수업" class="open-booking flex-[1.6] bg-blue-600 text-white rounded-xl py-3.5 font-bold shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><i data-feather="calendar" class="w-4 h-4"></i>무료 체험</button>
+      <a href="tel:050714155007" class="flex-1 bg-white ring-1 ring-black/10 rounded-2xl py-3.5 font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><i data-feather="phone" class="w-4 h-4"></i>전화</a>
+      <a href="https://pf.kakao.com/_agqvX/chat" target="_blank" rel="noopener" class="flex-1 bg-[#FEE500] text-[#191919] rounded-2xl py-3.5 font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><i data-feather="message-circle" class="w-4 h-4"></i>카톡</a>
+      <button data-program="무료 체험 수업" class="open-booking flex-[1.6] bg-brand-blue text-white rounded-2xl py-3.5 font-bold shadow-[0_10px_24px_-10px_rgba(37,99,235,.8)] flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><i data-feather="zap" class="w-4 h-4"></i>무료 체험</button>
     </div>
   </div>
 
@@ -472,7 +511,7 @@
 
           <div class="pt-2 safe-bottom">
             <button type="submit" id="submit-booking"
-              class="w-full bg-slate-900 hover:bg-slate-800 text-white border border-transparent py-4 text-sm font-bold shadow-xl shadow-slate-200 transition-all rounded-xl active:scale-95">
+              class="w-full bg-[#2563EB] hover:bg-blue-700 text-white border border-transparent py-4 text-sm font-bold shadow-xl shadow-slate-200 transition-all rounded-xl active:scale-95">
               상담 신청하기
             </button>
           </div>
@@ -483,6 +522,62 @@
 
   <script>
     try { feather.replace(); } catch (e) { console.error('Feather init failed', e); }
+
+    // 첫 화면: 코드가 쳐지고 → 게임이 실행되는 데모
+    (function () {
+      const codeEl = document.getElementById('code'), cv = document.getElementById('game');
+      if (!codeEl || !cv) return;
+      const ctx = cv.getContext('2d'), scoreEl = document.getElementById('score');
+      const C = { kw: '#7DB4FF', fn: '#FFC93C', str: '#9BE7A8', cm: '#6B7A99' };
+      const lines = [
+        [['import', C.kw], [' game', null]],
+        [['player', null], [' = game.', null], ['Player', C.fn], ['(color=', null], ['"yellow"', C.str], [')', null]],
+        [['', null]],
+        [['def', C.kw], [' ', null], ['on_space', C.fn], ['():', null]],
+        [['    player.', null], ['jump', C.fn], ['()', null], ['   # 점프!', C.cm]],
+        [['', null]],
+        [['game.', null], ['on_key', C.fn], ['(', null], ['"space"', C.str], [', on_space)', null]],
+        [['game.', null], ['run', C.fn], ['()', null]]
+      ];
+      const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let li = 0, ci = 0, typed = lines.map(() => []);
+      function render(done) {
+        codeEl.innerHTML = typed.map((segs, i) => segs.map(([t, c]) => c ? `<span style="color:${c}">${esc(t)}</span>` : esc(t)).join('') + (i === li && !done ? '<span class="caret"></span>' : '')).join('\n');
+      }
+      function typeStep() {
+        if (li >= lines.length) { render(true); startGame(); return; }
+        const flat = lines[li].reduce((a, [t, c]) => a.concat([...t].map(ch => [ch, c])), []);
+        if (ci < flat.length) {
+          const [ch, c] = flat[ci++]; const segs = typed[li];
+          if (segs.length && segs[segs.length - 1][1] === c) segs[segs.length - 1][0] += ch; else segs.push([ch, c]);
+          render(); setTimeout(typeStep, 28 + Math.random() * 40);
+        } else { li++; ci = 0; render(); setTimeout(typeStep, 160); }
+      }
+      // 게임
+      const W = cv.width, H = cv.height, G = H - 26;
+      let p = { x: 60, y: G - 26, vy: 0, s: 26 }, obs = [], t = 0, score = 0, running = false;
+      function startGame() { running = true; requestAnimationFrame(loop); }
+      function loop() {
+        t++;
+        if (t % 70 === 0) obs.push({ x: W + 10, w: 16 + Math.random() * 14, h: 20 + Math.random() * 22 });
+        obs.forEach(o => o.x -= 3.2); obs = obs.filter(o => o.x + o.w > -5);
+        const next = obs.find(o => o.x > p.x - 4);
+        if (next && next.x - p.x < 62 && p.y >= G - p.s - 0.5) p.vy = -9.2;
+        p.vy += 0.5; p.y = Math.min(G - p.s, p.y + p.vy);
+        if (obs.some(o => o.x + o.w < p.x && !o.passed && (o.passed = true))) { score++; scoreEl.textContent = '점수 ' + score; }
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = 'rgba(255,255,255,.08)'; for (let x = (-t * 3.2) % 40; x < W; x += 40) ctx.fillRect(x, G + 8, 20, 2);
+        ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(0, G, W, 2);
+        ctx.fillStyle = '#3B82F6'; obs.forEach(o => { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(o.x, G - o.h, o.w, o.h, 4) : ctx.rect(o.x, G - o.h, o.w, o.h); ctx.fill(); });
+        ctx.fillStyle = '#FFC93C'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(p.x, p.y, p.s, p.s, 6) : ctx.rect(p.x, p.y, p.s, p.s); ctx.fill();
+        ctx.fillStyle = '#0B1220'; ctx.fillRect(p.x + 16, p.y + 8, 4, 4);
+        if (running) requestAnimationFrame(loop);
+      }
+      if (reduce) { li = lines.length; typed = lines.map(l => l.slice()); render(true); loop(); running = false; }
+      else setTimeout(typeStep, 500);
+    })();
+
     // 스크롤하면 부드럽게 나타나기
     (function () {
       const els = document.querySelectorAll('.reveal');
