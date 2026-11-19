@@ -879,12 +879,14 @@
       const now = new Date();
       const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-      const payload = {
+      // 서버는 (담당·날짜·시간)이 같으면 '이미 예약됨'으로 거절한다.
+      // 상담 신청은 시간 개념이 없으므로 신청 시각(시:분)을 넣고, 겹치면 1분씩 밀어서 다시 보낸다.
+      const pad = n => String(n).padStart(2, '0');
+      const basePayload = {
         mode: 'reserve',
         teacher: DEFAULT_PAYLOAD.teacher,
         program: document.getElementById('input-program').value || DEFAULT_PAYLOAD.program,
-        date: todayStr, // Send today as the "requested date"
-        time: DEFAULT_PAYLOAD.time,
+        date: todayStr,
         name: document.getElementById('input-name').value,
         grade: document.getElementById('input-grade').value,
         phone: document.getElementById('input-phone').value,
@@ -892,20 +894,21 @@
       };
 
       try {
-        const res = await fetch(API_BASE, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
         let success = false;
-        if (!res.ok) {
-          alert(FAIL_MSG);
-        } else {
-          const json = await res.json();
-          success = json.ok;
-          if (!success) alert(FAIL_MSG);
+        let minutes = now.getHours() * 60 + now.getMinutes();
+        for (let attempt = 0; attempt < 8 && !success; attempt++) {
+          const m = Math.min(minutes + attempt, 23 * 60 + 59);
+          const res = await fetch(API_BASE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...basePayload, time: `${pad(Math.floor(m / 60))}:${pad(m % 60)}` })
+          });
+          let json = null;
+          try { json = await res.json(); } catch (_) {}
+          if (json && json.ok) { success = true; break; }
+          if (!(res.status === 409 || (json && json.error === 'CONFLICT'))) break; // 겹침이 아닌 오류는 재시도 안 함
         }
+        if (!success) alert(FAIL_MSG);
 
         if (success) {
           document.getElementById('booking-form').classList.add('hidden');
