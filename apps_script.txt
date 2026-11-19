@@ -147,6 +147,11 @@ function doPost(e) {
       return _json({ ok:false, error:'NO_BODY' });
     }
     const body = JSON.parse(e.postData.contents || '{}');
+    if (body.mode === 'game-access') {
+      return _verifyGameAccess(body.token)
+        ? _json({ ok: true, lesson: _gameLesson() })
+        : _json({ ok: false, error: 'GAME_ACCESS_REQUIRED' });
+    }
     if ((body.mode || '').toLowerCase() !== 'reserve') {
       return _json({ ok:false, error:'BAD_MODE' });
     }
@@ -179,12 +184,61 @@ function doPost(e) {
     sh.appendRow([ts, teacher, dateStr, timeStr, program, name, phone, grade, notes, STATUS_ACTIVE]);
     try { _notifyNew({ ts, program, name, phone, grade, notes }); } catch (mailErr) { console.error('notify failed', mailErr); }
 
-    return _json({ ok:true, reservation: { teacher, date: dateStr, time: timeStr } });
+    let gameAccess = null;
+    try { gameAccess = _issueGameAccess(); } catch (gameErr) { console.error('game access failed', gameErr.message); }
+    return _json({ ok:true, reservation: { teacher, date: dateStr, time: timeStr }, gameAccess });
   } catch (err) {
     return _json({ ok:false, error:'SERVER_ERROR', message:String(err) });
   } finally {
     try { lock.releaseLock(); } catch(_) {}
   }
+}
+
+const GAME_ACCESS_KEY = 'SWMIRAE_GAME_ACCESS_KEY';
+const GAME_ACCESS_DAYS = 7;
+
+function _gameSignature(value, secret) {
+  return Utilities.base64EncodeWebSafe(Utilities.computeHmacSha256Signature(value, secret)).replace(/=+$/, '');
+}
+
+// 상담 접수 잠금 안에서만 호출한다. 체험 권한에 개인정보는 넣지 않는다.
+function _issueGameAccess() {
+  const props = PropertiesService.getScriptProperties();
+  let secret = props.getProperty(GAME_ACCESS_KEY);
+  if (!secret) {
+    secret = Utilities.getUuid() + Utilities.getUuid();
+    props.setProperty(GAME_ACCESS_KEY, secret);
+  }
+  const expires = Date.now() + GAME_ACCESS_DAYS * 86400000;
+  const value = expires + '.' + Utilities.getUuid();
+  return value + '.' + _gameSignature(value, secret);
+}
+
+function _verifyGameAccess(token) {
+  if (typeof token !== 'string' || !/^\d{13}\.[0-9a-f-]{36}\.[A-Za-z0-9_-]{43}$/.test(token)) return false;
+  const [expires, nonce, signature] = token.split('.');
+  if (Number(expires) <= Date.now()) return false;
+  const secret = PropertiesService.getScriptProperties().getProperty(GAME_ACCESS_KEY);
+  if (!secret) return false;
+  const expected = _gameSignature(expires + '.' + nonce, secret);
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  return diff === 0;
+}
+
+function _gameLesson() {
+  return {
+    commands: [
+      {name: '색상', example: '색상 파랑', help: '주인공 색을 파랑, 노랑, 초록, 분홍 중에서 골라요.', values: ['파랑', '노랑', '초록', '분홍']},
+      {name: '속도', example: '속도 5', help: '1부터 10까지 숫자를 쓰면 움직이는 속도가 바뀌어요.', min: 1, max: 10},
+      {name: '별', example: '별 5', help: '1부터 8까지 숫자로 모아야 할 별의 개수를 정해요.', min: 1, max: 8},
+      {name: '장애물', example: '장애물 2', help: '0부터 4까지 숫자로 피해야 할 바위의 개수를 정해요.', min: 0, max: 4}
+    ],
+    starter: '색상 파랑\n속도 5\n별 5\n장애물 2',
+    start: {x: 61, y: 290},
+    stars: [[150, 91], [241, 230], [330, 80], [487, 178], [553, 294], [80, 164], [349, 308], [562, 74]].map(([x,y]) => ({x,y})),
+    rocks: [[211, 143], [386, 218], [480, 83], [435, 305]].map(([x,y]) => ({x,y}))
+  };
 }
 
 // === 새 신청 알림 (2026-11-19 추가) ===

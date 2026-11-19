@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SW미래영재컴퓨터학원 온라인 게임 만들기 체험">
+  <title>게임 만들기 체험 | SW미래영재컴퓨터학원</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top"><div><a href="../" class="brand"><b>SW</b> 미래영재컴퓨터학원</a><a href="../#trial">학원 홈페이지</a></div></header>
+  <main>
+    <div class="intro">
+      <h1>별 모으기 게임 만들기</h1>
+      <p>색과 속도, 별의 개수를 명령으로 바꾸고 내가 만든 게임을 실행해요.</p>
+    </div>
+    <section class="locked" id="gate">
+      <div class="mission" aria-hidden="true"><span class="player"></span><span class="star">★</span><span class="rock"></span></div>
+      <div>
+        <h2 id="gate-title">온라인 게임 만들기 체험</h2>
+        <p id="gate-text" role="status">무료 상담 신청을 마치면 체험을 시작할 수 있어요.</p>
+        <a class="button primary" id="consult" href="../?consult=game#trial">무료 상담 신청</a>
+        <button type="button" id="retry" hidden>다시 확인</button>
+      </div>
+    </section>
+    <div class="workbench" id="workbench" hidden>
+      <section class="card guide">
+        <h2>명령을 바꿔 보세요</h2>
+        <dl id="guide"></dl>
+        <p class="hint">명령은 한 줄에 하나씩 입력해요. 예시를 누르면 편집 칸에 추가돼요.</p>
+      </section>
+      <section class="card editor">
+        <h2><label for="code">내 게임의 명령</label></h2>
+        <textarea id="code" rows="5" spellcheck="false" autocomplete="off"></textarea>
+        <div class="actions">
+          <button type="button" class="primary" id="run">게임 실행</button>
+          <button type="button" id="reset">예시 명령 복원</button>
+        </div>
+        <p id="code-status" class="hint" role="status"></p>
+      </section>
+      <section class="card screen">
+        <div class="screen-title"><h2>실행 화면</h2><output id="score"></output></div>
+        <div class="board">
+          <canvas id="board" width="640" height="360" tabindex="0" aria-label="별 모으기 게임. 방향키나 아래 이동 버튼으로 조작."></canvas>
+        </div>
+        <p id="play-status" class="hint" role="status">명령을 바꾸고 게임 실행을 눌러 보세요.</p>
+        <div class="pad" aria-label="캐릭터 이동">
+          <button type="button" data-move="ArrowLeft" aria-label="왼쪽">←</button>
+          <button type="button" data-move="ArrowUp" aria-label="위">↑</button>
+          <button type="button" data-move="ArrowDown" aria-label="아래">↓</button>
+          <button type="button" data-move="ArrowRight" aria-label="오른쪽">→</button>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="../booking-api.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
