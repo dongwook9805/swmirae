@@ -35,7 +35,7 @@ button[aria-pressed="true"] { color: #1e49aa; background: #eaf1ff; border-color:
 .mission .player { width: 31px; height: 25px; top: 66%; left: 34%; background: #64e3cb; clip-path: polygon(50% 0%, 100% 95%, 50% 80%, 0% 95%); }
 .mission .star { font-size: 26px; color: #facc60; top: 22%; left: 55%; }
 .mission .rock { border-radius: 7px; background: #7c89a9; width: 21px; height: 21px; top: 61%; left: 71%; transform: rotate(23deg); }
-.workbench { display: grid; grid-template-columns: minmax(0, 1.44fr) minmax(310px, 1fr); gap: 14px; }
+.workbench { display: grid; grid-template-columns: minmax(310px, 1fr) minmax(0, 1.24fr); gap: 14px; }
 .play-column, .learn-column { display: grid; align-content: start; gap: 12px; min-width: 0; }
 .card { min-width: 0; padding: clamp(14px, 2vw, 20px); background: #fff; border: 1px solid var(--line); border-radius: 16px; }
 .screen-title,.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
@@ -61,4 +61,24 @@ pre { max-height: 260px; overflow: auto; overflow-wrap: anywhere; white-space: p
 @media(max-width:450px) {
   .locked { grid-template-columns: minmax(0,1fr); gap: 12px; }
   .mission { aspect-ratio: 2.2; }
+}
+.roadmap { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.roadmap b { color: var(--ink); margin-right: 4px; }
+.fields .wide { grid-column: 1 / -1; }
+textarea { min-width: 0; width: 100%; display: block; resize: vertical; padding: 8px 9px; border-radius: 7px; border: 1px solid var(--line); font: inherit; background: #f7f9fd; color: var(--ink); }
+textarea:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+#rules-form { margin-top: 9px; }
+#rules-input { margin-top: 6px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+#rules-form .actions { margin-top: 10px; }
+#code-status[data-error="true"], #design-status[data-error="true"] { color: #a32723; }
+.game-empty { display: grid; align-content: center; gap: 4px; min-height: 210px; border-radius: 12px; padding: 22px; background: #eaf1ff; color: #1f3e73; }
+@media(max-width:780px) {
+  .game-empty { min-height: 140px; }
+}
+@supports (height: 1cqw) {
+  .game-frame { container-type: inline-size; }
+  .game-frame iframe { height: calc(48.9cqw + 150px); }
+  @media(max-width:450px) {
+    .game-frame iframe { height: calc(48.9cqw + 175px); }
+  }
 }

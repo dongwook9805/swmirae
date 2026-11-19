@@ -42,9 +42,9 @@ button:hover, button:focus-visible { outline: 2px solid #a0f1d9; outline-offset:
 <main>
   <header>
     <h1 id="title"></h1>
-    <div class="hud"><span>남은 시간 <strong id="time">30</strong>초</span><span>점수 <strong id="score">0</strong>점</span></div>
+    <div class="hud"><span>남은 시간 <strong id="time">30</strong>초</span><span><b id="metric">점수</b> <strong id="score">0</strong><b id="unit">점</b></span></div>
   </header>
-  <p class="rules">편지 +10 · 황금 편지 +30 · 운석 −15</p>
+  <p class="rules" id="rules"></p>
   <div class="board"><canvas width="720" height="352" id="space" aria-label="별빛 우체국 게임 화면"></canvas></div>
   <div class="controls">
     <div class="move" aria-label="우주선 조작">
@@ -57,7 +57,7 @@ button:hover, button:focus-visible { outline: 2px solid #a0f1d9; outline-offset:
 </main>
 <script>
 // 한 줄의 설정을 바꿔 나만의 게임을 만들어요.
-const CONFIG = /* LESSON_SETTINGS_START */ {"title":"별빛 우체국","spacecraftColor":"#60a5fa","seconds":30,"meteorRate":0.25,"challenge":false} /* LESSON_SETTINGS_END */;
+const CONFIG = /* LESSON_SETTINGS_START */ {"title":"별빛 우체국","kind":"catch","spacecraftColor":"#60a5fa","seconds":30,"meteorRate":0.25,"parcelPoints":10,"goldPoints":30,"crashPenalty":15,"challenge":false} /* LESSON_SETTINGS_END */;
 const canvas = document.getElementById('space');
 const world = canvas.getContext('2d');
 const timer = document.getElementById('time');
@@ -68,8 +68,10 @@ const width = canvas.width;
 const height = canvas.height;
 const moves = new Set();
 const shipY = height - 42;
+const survival = CONFIG.kind === 'survive';
 let shipX = width / 2;
 let score = 0;
+let lives = CONFIG.lives || 0;
 let items = [];
 let signals = [];
 let playing = false;
@@ -83,6 +85,12 @@ document.title = CONFIG.title;
 document.getElementById('title').textContent = CONFIG.title;
 timer.textContent = CONFIG.seconds;
 start.textContent = CONFIG.challenge ? '도전 시작' : '게임 시작';
+document.getElementById('metric').textContent = survival ? '목숨' : '점수';
+document.getElementById('unit').textContent = survival ? '개' : '점';
+document.getElementById('rules').textContent = survival
+  ? '운석에 닿으면 목숨을 하나 잃어요. 시간이 끝날 때까지 버텨요.'
+  : '편지 +' + CONFIG.parcelPoints + ' · 황금 편지 +' + CONFIG.goldPoints + ' · 운석 −' + CONFIG.crashPenalty;
+scoreLabel.textContent = survival ? lives : score;
 
 // 시드가 같은 난수를 사용해서 매 판 같은 위치와 순서로 물체가 나와요.
 function random() {
@@ -95,15 +103,18 @@ function spawn(elapsed) {
     const lane = random();
     const kind = random();
     const velocity = random();
-    const firstParcel = itemNumber < 2;
+    const firstParcel = !survival && itemNumber < 2;
+    const center = firstParcel || (survival && itemNumber === 0);
+    const shape = firstParcel ? 'mail' : kind < CONFIG.meteorRate ? 'meteor' : kind > .90 ? 'gold' : 'mail';
     items.push({
-      x: firstParcel ? width / 2 + itemNumber * 53 : 30 + lane * (width - 60),
+      x: center ? width / 2 + itemNumber * 53 : 30 + lane * (width - 60),
       y: -18,
       speed: 132 + velocity * 58 + elapsed * 2.4,
-      kind: firstParcel ? 'mail' : kind < CONFIG.meteorRate ? 'meteor' : kind > .90 ? 'gold' : 'mail'
+      kind: survival ? 'meteor' : shape
     });
     itemNumber++;
-    nextItemAt += Math.max(.40, .78 - nextItemAt * .010);
+    nextItemAt += survival ? Math.max(.38, 1.18 - CONFIG.meteorRate - nextItemAt * .010)
+      : Math.max(.40, .78 - nextItemAt * .010);
   }
 }
 
@@ -177,12 +188,14 @@ function drawShip(elapsed) {
 
 // 부딪힌 물체의 종류를 확인하고, 점수와 화면에 뜨는 숫자를 바꿔요.
 function catchItem(item) {
-  const difference = item.kind === 'meteor' ? -15 : item.kind === 'gold' ? 30 : 10;
-  score = Math.max(0, score + difference);
-  scoreLabel.textContent = score;
+  const difference = survival ? -1 : item.kind === 'meteor'
+    ? -CONFIG.crashPenalty : item.kind === 'gold' ? CONFIG.goldPoints : CONFIG.parcelPoints;
+  if (survival) lives = Math.max(0, lives + difference);
+  else score = Math.max(0, score + difference);
+  scoreLabel.textContent = survival ? lives : score;
   signals.push({
     x: item.x, y: shipY - 9, age: 0,
-    text: difference > 0 ? '+' + difference : '−15',
+    text: difference > 0 ? '+' + difference : String(difference),
     color: difference < 0 ? '#ffb4c1' : item.kind === 'gold' ? '#ffdd74' : '#b2ffe7'
   });
 }
@@ -190,11 +203,14 @@ function catchItem(item) {
 function finish() {
   playing = false;
   moves.clear();
-  timer.textContent = '0';
   start.disabled = false;
   start.textContent = '다시 하기';
-  message.textContent = '배송 완료! ' + score + '점을 받았어요.';
-  if (window.parent !== window) window.parent.postMessage({type: 'swmirae:round', score, challenge: CONFIG.challenge}, '*');
+  message.textContent = survival
+    ? (lives > 0 ? '성공! 시간 끝까지 버텼어요.' : '목숨을 모두 잃었어요. 다시 도전해 보세요.')
+    : '배송 완료! ' + score + '점을 받았어요.';
+  if (CONFIG.challenge && window.parent !== window) {
+    window.parent.postMessage({type: 'swmirae:round', score, challenge: true}, '*');
+  }
 }
 
 // 매 프레임 우주선과 편지를 움직이고, 0초가 되면 게임을 끝내요.
@@ -216,7 +232,7 @@ function frame(now) {
     return item.y < height + 20;
   });
   draw(elapsed);
-  if (elapsed >= CONFIG.seconds) finish();
+  if (elapsed >= CONFIG.seconds || (survival && lives === 0)) finish();
   else requestAnimationFrame(frame);
 }
 
@@ -231,11 +247,12 @@ function begin() {
   itemNumber = 0;
   nextItemAt = .22;
   score = 0;
-  scoreLabel.textContent = '0';
+  lives = CONFIG.lives || 0;
+  scoreLabel.textContent = survival ? lives : score;
   timer.textContent = CONFIG.seconds;
-  message.textContent = '편지를 받고 운석은 피해요.';
+  message.textContent = survival ? '운석을 피하면서 시간이 끝날 때까지 버텨요.' : '편지를 받고 운석은 피해요.';
   start.disabled = true;
-  start.textContent = '배송 중';
+  start.textContent = '게임 중';
   roundStart = performance.now();
   previousFrame = roundStart;
   requestAnimationFrame(frame);
